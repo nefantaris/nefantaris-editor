@@ -1,0 +1,79 @@
+.claude/rules/frontend.md
+  s_e99fde567452af::t_9f21b107be17b0 1-232
+.prettierignore
+  s_e99fde567452af::t_abd2602fb9e610 1
+BRIEF.md
+  s_a4962119c56942::t_3655403340ad24 1-31
+LICENSE
+  s_85c100cecceaed::t_98754fe7ef4bdc 1-21
+README.md
+  s_85c100cecceaed::t_9719ef15bf84ef 1-21
+e2e/smoke.spec.ts
+  s_a4962119c56942::t_3ebeda7c7bdba8 1-9
+electron/main.cts
+  s_298540fcf11875::t_7ac5cfa1a5ab91 1-37
+electron/preload.cts
+  s_a4962119c56942::t_417bce0a6be975 1-3
+electron/tsconfig.json
+  s_298540fcf11875::t_aa6cf33f2c06ae 1-15
+index.html
+  s_a4962119c56942::t_23ac9f096bc5cc 1-20
+package-lock.json
+  s_a4962119c56942::t_e60323b6548198 1-9957
+package.json
+  s_85c100cecceaed::t_6bf9d10b3504ce 1-72
+src/App.tsx
+  s_e99fde567452af::t_a3c3be73c0dd6a 1-36
+src/app.css
+  s_e99fde567452af::t_7d31943e75f3a9 1-45
+src/components/PreloadLink.tsx
+  s_e99fde567452af::t_1120ffd42eb72c 1-36
+src/pages/Home/index.tsx
+  s_a4962119c56942::t_d0faae595c2c29 1-8
+src/pages/NotFound/index.tsx
+  s_a4962119c56942::t_501268e4766417 1-30
+src/routes.ts
+  s_298540fcf11875::t_df2cd186f21364 1-51
+src/utils/useUrlState.ts
+  s_e99fde567452af::t_53401a213d9d2b 1-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "56c306177193f47dc4359d422bb7292eef9d80fe",
+  "prompts": {},
+  "sessions": {
+    "s_298540fcf11875": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b42e0a5a-295d-4f4c-a1f7-554640447d5a",
+        "model": "claude-opus-5"
+      },
+      "human_author": "adamjsturge <adamjsturge@gmail.com>"
+    },
+    "s_85c100cecceaed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bee6880b-e831-4dca-a98b-2df118fd9056",
+        "model": "claude-opus-5"
+      },
+      "human_author": "adamjsturge <adamjsturge@gmail.com>"
+    },
+    "s_a4962119c56942": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1af7f31b-8456-479c-bc58-5da43f12f260",
+        "model": "claude-opus-5"
+      },
+      "human_author": "adamjsturge <adamjsturge@gmail.com>"
+    },
+    "s_e99fde567452af": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4d507be1-b4d2-4541-9fe9-2550b76c04bb",
+        "model": "claude-fable-5"
+      },
+      "human_author": "adamjsturge <adamjsturge@gmail.com>"
+    }
+  }
+}
