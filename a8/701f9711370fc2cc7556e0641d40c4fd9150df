@@ -1,0 +1,19 @@
+.github/workflows/check.yml
+  s_85c100cecceaed::t_390203e4f75dba 26-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "a8701f9711370fc2cc7556e0641d40c4fd9150df",
+  "prompts": {},
+  "sessions": {
+    "s_85c100cecceaed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bee6880b-e831-4dca-a98b-2df118fd9056",
+        "model": "claude-opus-5"
+      },
+      "human_author": "adamjsturge <adamjsturge@gmail.com>"
+    }
+  }
+}
