@@ -1,7 +1,4 @@
-import { defineConfig, devices } from "@playwright/test";
-
-const port = process.env.PORT ?? "5173";
-const baseURL = `http://localhost:${port}`;
+import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: ".",
@@ -11,19 +8,6 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [["line"], ["allure-playwright"]],
   use: {
-    baseURL,
     trace: "on-first-retry",
-  },
-  projects: [
-    {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
-    },
-  ],
-  webServer: {
-    command: `npm run dev -- --port ${port} --strictPort`,
-    url: baseURL,
-    reuseExistingServer: !process.env.CI,
-    cwd: "..",
   },
 });

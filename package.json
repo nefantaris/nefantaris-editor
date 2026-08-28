@@ -25,16 +25,25 @@
     "lint": "eslint . --fix",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "test:e2e": "cd e2e && playwright test",
-    "test:e2e:ui": "cd e2e && playwright test --ui",
+    "test:e2e": "npm run build && npm run build:electron && npm run test:e2e --prefix e2e",
+    "test:e2e:ui": "npm run build && npm run build:electron && npm run test:e2e:ui --prefix e2e",
     "test:e2e:report": "cd e2e && allure generate ./allure-results --clean && allure open",
     "setFormatToPrecommitHook": "echo \"#!/bin/bash\\n\\nSTAGED_JS_FILES=\\$(git diff --cached --name-only --diff-filter=ACM | grep -E '\\\\.(tsx?|js)\\$' || true)\\n\\nif [ -n \\\"\\$STAGED_JS_FILES\\\" ]; then\\n  echo \\\"\\$STAGED_JS_FILES\\\" | xargs npx prettier --write --ignore-unknown || exit 1\\n  echo \\\"\\$STAGED_JS_FILES\\\" | xargs npx eslint --fix || exit 1\\n  echo \\\"\\$STAGED_JS_FILES\\\" | xargs git add\\nfi\" > .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit"
   },
   "dependencies": {
+    "@codemirror/commands": "6.11.0",
+    "@codemirror/lang-markdown": "6.5.2",
+    "@codemirror/language": "6.12.4",
+    "@codemirror/language-data": "6.5.2",
+    "@codemirror/merge": "6.12.2",
+    "@codemirror/state": "6.7.1",
+    "@codemirror/view": "6.43.9",
+    "@lezer/common": "1.5.2",
+    "@lezer/highlight": "1.2.3",
+    "isomorphic-git": "1.41.9",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-icons": "5.7.0",
-    "wouter": "3.10.0"
+    "yaml": "2.9.0"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

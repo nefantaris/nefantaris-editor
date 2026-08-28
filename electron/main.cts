@@ -1,31 +1,27 @@
 import { app, BrowserWindow } from "electron";
-import path from "node:path";
+import {
+  registerAssetProtocolHandler,
+  registerAssetScheme,
+} from "./assetProtocol.cjs";
+import { stopAllPreviewServers } from "./devServer.cjs";
+import { registerIpcHandlers } from "./ipcHandlers.cjs";
+import { createWelcomeWindow } from "./windows.cjs";
 
-const createWindow = (): void => {
-  const window = new BrowserWindow({
-    width: 1280,
-    height: 800,
-    webPreferences: {
-      contextIsolation: true,
-      nodeIntegration: false,
-      preload: path.join(__dirname, "preload.cjs"),
-    },
-  });
+const userDataDir = process.env.NEFANTARIS_USER_DATA_DIR;
+if (userDataDir) {
+  app.setPath("userData", userDataDir);
+}
 
-  const devServerUrl = process.env.VITE_DEV_SERVER_URL;
-  if (devServerUrl) {
-    void window.loadURL(devServerUrl);
-  } else {
-    void window.loadFile(path.join(__dirname, "..", "dist", "index.html"));
-  }
-};
+registerAssetScheme();
 
 app.on("ready", () => {
-  createWindow();
+  registerAssetProtocolHandler();
+  registerIpcHandlers();
+  createWelcomeWindow();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      createWelcomeWindow();
     }
   });
 });
@@ -33,5 +29,24 @@ app.on("ready", () => {
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
+  }
+});
+
+let previewTeardown: "pending" | "running" | "done" = "pending";
+
+async function finishPreviewTeardownThenQuit(): Promise<void> {
+  await stopAllPreviewServers();
+  previewTeardown = "done";
+  app.quit();
+}
+
+app.on("before-quit", (event) => {
+  if (previewTeardown === "done") {
+    return;
+  }
+  event.preventDefault();
+  if (previewTeardown === "pending") {
+    previewTeardown = "running";
+    void finishPreviewTeardownThenQuit();
   }
 });

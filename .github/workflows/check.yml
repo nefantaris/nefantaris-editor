@@ -38,3 +38,6 @@ jobs:
 
       - name: Run build
         run: npm run build
+
+      - name: Run Electron build
+        run: npm run build:electron

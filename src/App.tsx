@@ -1,34 +1,24 @@
-import { lazy, Suspense, useDeferredValue, useEffect } from "react";
-import { Route, Switch, useLocation } from "wouter";
-import { preloadAllRoutesWhenIdle, routeImports } from "./routes";
-
-const Home = lazy(routeImports["/"]);
-const NotFound = lazy(routeImports["/404"]);
+import { useEffect, useState } from "react";
+import type { WindowContext } from "../electron/ipcContract.cts";
+import Site from "./pages/Site";
+import Welcome from "./pages/Welcome";
 
 const App = () => {
-  const [location] = useLocation();
-  const deferredLocation = useDeferredValue(location);
+  const [context, setContext] = useState<WindowContext | null>(null);
 
   useEffect(() => {
-    preloadAllRoutesWhenIdle();
+    const loadContext = async () => {
+      setContext(await globalThis.nefantaris.invoke("window:getContext"));
+    };
+    void loadContext();
   }, []);
 
   return (
     <>
-      <a
-        href="#main-content"
-        className="bg-brand-primary text-brand-white sr-only z-50 rounded-lg px-4 py-2 focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
-      >
-        Skip to main content
-      </a>
-      <main id="main-content">
-        <Suspense fallback={null}>
-          <Switch location={deferredLocation}>
-            <Route path="/" component={Home} />
-            <Route component={NotFound} />
-          </Switch>
-        </Suspense>
-      </main>
+      {context?.kind === "welcome" && <Welcome />}
+      {context?.kind === "site" && (
+        <Site siteName={context.siteName} sitePath={context.sitePath} />
+      )}
     </>
   );
 };

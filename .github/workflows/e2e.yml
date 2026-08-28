@@ -27,13 +27,12 @@ jobs:
         working-directory: ./e2e
         run: npm install
 
-      - name: Install Playwright browsers
+      - name: Install Electron system dependencies
         working-directory: ./e2e
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install-deps chromium
 
       - name: Run E2E tests
-        working-directory: ./e2e
-        run: npm run test:e2e
+        run: xvfb-run --auto-servernum -- npm run test:e2e
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v7

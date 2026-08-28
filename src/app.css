@@ -11,6 +11,8 @@
 @theme {
   --font-sans:
     "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono:
+    ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
   --color-brand-primary: #2563eb;
   --color-brand-primaryHover: #1d4ed8;

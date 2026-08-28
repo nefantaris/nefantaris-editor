@@ -1,0 +1,7 @@
+{
+  "contract": 1,
+  "site": null,
+  "templates": ["page", "notFound", "home", "post", "blogIndex"],
+  "directives": ["gallery"],
+  "plugins": ["nefantaris-plugin-date-fns"]
+}

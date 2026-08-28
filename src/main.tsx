@@ -1,7 +1,5 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Router } from "wouter";
-import { useHashLocation } from "wouter/use-hash-location";
 import App from "./App.tsx";
 import "./app.css";
 
@@ -10,8 +8,6 @@ if (!rootElement) throw new Error("Failed to find the root element");
 
 createRoot(rootElement).render(
   <StrictMode>
-    <Router hook={useHashLocation}>
-      <App />
-    </Router>
+    <App />
   </StrictMode>,
 );

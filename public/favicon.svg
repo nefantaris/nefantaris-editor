@@ -1,9 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#2563eb" />
-  <g fill="none" stroke="#ffffff" stroke-width="20">
-    <ellipse cx="256" cy="256" rx="176" ry="72" />
-    <ellipse cx="256" cy="256" rx="176" ry="72" transform="rotate(60 256 256)" />
-    <ellipse cx="256" cy="256" rx="176" ry="72" transform="rotate(120 256 256)" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">White spiderweb on blue background</title>
+  <desc id="desc">A bold, symmetrical white spiderweb centered on a solid blue square.</desc>
+
+  <rect width="512" height="512" fill="#075BD8"/>
+
+  <g fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Radial strands -->
+    <path d="M256 256V42"/>
+    <path d="M256 256L407.32 104.68"/>
+    <path d="M256 256H470"/>
+    <path d="M256 256L407.32 407.32"/>
+    <path d="M256 256V470"/>
+    <path d="M256 256L104.68 407.32"/>
+    <path d="M256 256H42"/>
+    <path d="M256 256L104.68 104.68"/>
+
+    <!-- Outer web ring -->
+    <path d="M256 42
+             Q319.88 101.79 407.32 104.68
+             Q410.21 192.12 470 256
+             Q410.21 319.88 407.32 407.32
+             Q319.88 410.21 256 470
+             Q192.12 410.21 104.68 407.32
+             Q101.79 319.88 42 256
+             Q101.79 192.12 104.68 104.68
+             Q192.12 101.79 256 42Z"/>
+
+    <!-- Middle web ring -->
+    <path d="M256 118
+             Q294.02 164.20 353.58 158.42
+             Q347.80 217.98 394 256
+             Q347.80 294.02 353.58 353.58
+             Q294.02 347.80 256 394
+             Q217.98 347.80 158.42 353.58
+             Q164.20 294.02 118 256
+             Q164.20 217.98 158.42 158.42
+             Q217.98 164.20 256 118Z"/>
+
+    <!-- Inner web ring -->
+    <path d="M256 178
+             Q274.51 211.32 311.15 200.85
+             Q300.68 237.49 334 256
+             Q300.68 274.51 311.15 311.15
+             Q274.51 300.68 256 334
+             Q237.49 300.68 200.85 311.15
+             Q211.32 274.51 178 256
+             Q211.32 237.49 200.85 200.85
+             Q237.49 211.32 256 178Z"/>
   </g>
-  <circle cx="256" cy="256" r="28" fill="#ffffff" />
 </svg>
