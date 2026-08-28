@@ -1,0 +1,528 @@
+e2e/auth.spec.ts
+  s_8eb1d5ba7fccf1::t_befffec8b7b8f0 115
+  s_8eb1d5ba7fccf1::t_8913acf55765a8 1-77,79-106,108-114,116-213
+  s_8eb1d5ba7fccf1::t_2ff01571f15016 78,107
+electron/git/isomorphicGit.cts
+  s_8eb1d5ba7fccf1::t_ecba1b26f4bf7a 644
+  s_8eb1d5ba7fccf1::t_274225fbec6617 1-4,6-11,15-33,35-281,314-333,335-460,465-641,645-657
+  s_8eb1d5ba7fccf1::t_f888a37730b90e 5
+  s_8eb1d5ba7fccf1::t_213d75576bff81 13
+  s_8eb1d5ba7fccf1::t_057f38e7f810b5 14
+  s_8eb1d5ba7fccf1::t_0d5edc315f1e18 642-643
+  s_8eb1d5ba7fccf1::t_ef8d1b2d1583c7 462
+  s_8eb1d5ba7fccf1::t_a9cac6d0cd8482 282-290
+  s_8eb1d5ba7fccf1::t_ed318e93790a8f 291-313
+  s_8eb1d5ba7fccf1::t_aec142da570865 34
+  s_8eb1d5ba7fccf1::t_ed3a6b9fc2b633 461,463-464
+  s_8eb1d5ba7fccf1::t_3cd2b1837331bf 334
+  s_8eb1d5ba7fccf1::t_9c97ed91acdd54 12
+src/pages/Site/livePreview/blockDecorations.ts
+  s_8eb1d5ba7fccf1::t_a9e7504c53a791 150
+  s_8eb1d5ba7fccf1::t_3ad2b20d7cc30e 84-87,135-139
+  s_8eb1d5ba7fccf1::t_cfe0c2c8a2315e 1-83,88-134,140-149,151-165
+fixtures/inspect.json
+  s_8eb1d5ba7fccf1::t_1ee3d9fe0117d2 1-7
+e2e/git.spec.ts
+  s_8eb1d5ba7fccf1::t_f91c6f3515cafa 178-180
+  s_8eb1d5ba7fccf1::t_27633bb83c032e 28,147,154-156,203-208,245-248
+  s_8eb1d5ba7fccf1::t_6cb6b28b1270a1 1-27,29-146,148-153,157-177,181-202,209-244,249-290
+src/pages/Site/DeleteContentModal.tsx
+  s_8eb1d5ba7fccf1::t_b1653625968ffa 1-38
+e2e/devPreview.spec.ts
+  s_8eb1d5ba7fccf1::t_d0e099930ec1e7 114,185-187
+  s_8eb1d5ba7fccf1::t_7c85e1e21592a8 139,142
+  s_8eb1d5ba7fccf1::t_000206db57e55d 1-113,115-138,140-141,143-184,188-237
+electron/siteConnect.cts
+  s_8eb1d5ba7fccf1::t_2848eaa91e8556 19
+  s_8eb1d5ba7fccf1::t_08a893d3c0c4dd 1-18,20-87
+src/pages/Site/VersionsModal.tsx
+  s_8eb1d5ba7fccf1::t_a14d9e6db76b24 1-74
+src/pages/Site/RenameContentModal.tsx
+  s_8eb1d5ba7fccf1::t_e59c359375995a 16
+  s_8eb1d5ba7fccf1::t_d52ab692a6d000 1-15,17-75
+src/pages/Site/livePreview/previewTheme.ts
+  s_8eb1d5ba7fccf1::t_0f39f1823e277e 1-156
+.prettierignore
+  s_8eb1d5ba7fccf1::t_216ec40ff8e9b6 2-5
+.github/workflows/check.yml
+  s_8eb1d5ba7fccf1::t_7669aaae9f0b74 41-43
+electron/typedIpc.cts
+  s_8eb1d5ba7fccf1::t_319bfa6a6d5fc3 1,3-24
+  s_8eb1d5ba7fccf1::t_c910202c2fe58e 2
+electron/preload.cts
+  s_8eb1d5ba7fccf1::t_69c8b485853d3c 1,3-7,9-14,49-52,59-85
+  s_8eb1d5ba7fccf1::t_c910202c2fe58e 2
+  s_8eb1d5ba7fccf1::t_bbaf721c304eb7 28-34
+  s_8eb1d5ba7fccf1::t_4b259517b71fc8 43-48
+  s_8eb1d5ba7fccf1::t_c56f7a6b459d7b 23
+  s_8eb1d5ba7fccf1::t_e3ea47e540df47 15-22,53
+  s_8eb1d5ba7fccf1::t_7fce93d1f8c5b8 24
+  s_8eb1d5ba7fccf1::t_da125426108ac0 25-27,54
+  s_8eb1d5ba7fccf1::t_33ae122579b6dd 55
+  s_8eb1d5ba7fccf1::t_b6c2c46872ef66 35-42,56-58
+src/pages/Site/CreateContentModal.tsx
+  s_8eb1d5ba7fccf1::t_e22c2f32436c20 1-42,44-94
+  s_8eb1d5ba7fccf1::t_20946eb5c82a79 43
+src/pages/Site/livePreview/inlineDecorations.ts
+  s_8eb1d5ba7fccf1::t_c9883904392e56 228,231,236
+  s_8eb1d5ba7fccf1::t_5e72917740aa8d 344-345
+  s_8eb1d5ba7fccf1::t_2ed9d4edfb3356 227,229-230,232,240-245,252-254,257-258,261-262,268-271,273,275-279,282,284-285,287-288
+  s_8eb1d5ba7fccf1::t_d013b43cdd0892 1-211,220-226,233-235,237-239,246-251,255-256,259-260,263-267,272,274,280-281,283,286,289-343,346-395,397-441,445-476
+  s_8eb1d5ba7fccf1::t_3ad2b20d7cc30e 212-219,396,442-444
+e2e/content.spec.ts
+  s_8eb1d5ba7fccf1::t_ce1cd479a85f90 143,148-150
+  s_8eb1d5ba7fccf1::t_ad4eeb72dbaf67 22-25
+  s_8eb1d5ba7fccf1::t_a1bc5b12f7b66f 45
+  s_8eb1d5ba7fccf1::t_e8da67be744021 375,379
+  s_8eb1d5ba7fccf1::t_f989eabca0ae45 301
+  s_8eb1d5ba7fccf1::t_3da705227d25d6 279
+  s_8eb1d5ba7fccf1::t_c26fff7feb58a6 166,173
+  s_8eb1d5ba7fccf1::t_c299315fddc8a4 176-184,186-191,193-194
+  s_8eb1d5ba7fccf1::t_dd4c94c19d4489 185,192
+  s_8eb1d5ba7fccf1::t_59391a7b48ccab 1-13,15-21,26,29-44,46-88,92-108,120,125-142,144-146,152-164,167-172,174-175,195-198,200-212,220,222-223,225-227,229-234,236-243,245-253,255-266,272-277,280-289,291-293,297,302-320,325-330,333-339,349-354,357-358,368-371,373,387-396
+  s_8eb1d5ba7fccf1::t_858a0773bb99dc 356
+  s_8eb1d5ba7fccf1::t_08f9fbb076e7b9 386
+  s_8eb1d5ba7fccf1::t_c7709189e771d5 332,340-345
+  s_8eb1d5ba7fccf1::t_cad0c211d66cd1 89-91,109-119,121-124,147,151,165,199,213-214,221,224,228,235,254,267-271,278,294-296,298-300,321-324,331,346-348,355,372,374,376-378,380-385
+  s_8eb1d5ba7fccf1::t_994d25c5e4b1fe 215-219
+  s_8eb1d5ba7fccf1::t_195b345a134f53 359,365-366
+  s_8eb1d5ba7fccf1::t_17349df240d1f2 244,290
+  s_8eb1d5ba7fccf1::t_0897fa1ea40247 360-364,367
+  s_8eb1d5ba7fccf1::t_8463de8ad49a3f 27-28
+  s_8eb1d5ba7fccf1::t_4ce229a34c8ec0 14
+README.md
+  s_8eb1d5ba7fccf1::t_50c99215f69016 22
+  s_8eb1d5ba7fccf1::t_881fb6832b673a 7-17
+  s_8eb1d5ba7fccf1::t_1a699477adad76 28
+e2e/playwright.config.ts
+  s_8eb1d5ba7fccf1::t_268b69f8ba85e7 1
+e2e/preview.spec.ts
+  s_8eb1d5ba7fccf1::t_c5c2c9d4b7ac48 73-74
+  s_8eb1d5ba7fccf1::t_a05c8e0c1f83aa 228-230
+  s_8eb1d5ba7fccf1::t_ea9890caaebe6f 1
+  s_8eb1d5ba7fccf1::t_10a816810b4ce3 306-311
+  s_8eb1d5ba7fccf1::t_091bcb345c60c7 2-11,13-51,53-72,75-92,95,115-139,143-149,154-161,165-179,181-203,205-227,231-266,270-274,276-287,289-290,297-305,312
+  s_8eb1d5ba7fccf1::t_084e7da20cc5f0 140-142
+  s_8eb1d5ba7fccf1::t_f9ac2ccc2a2a3e 150-153
+  s_8eb1d5ba7fccf1::t_98d1e0fc13deb9 96-114
+  s_8eb1d5ba7fccf1::t_45f349a2f9b5f6 180
+  s_8eb1d5ba7fccf1::t_4db21a95e27027 162-164
+  s_8eb1d5ba7fccf1::t_584e56899040fa 204
+  s_8eb1d5ba7fccf1::t_5426901c27c18d 93-94
+  s_8eb1d5ba7fccf1::t_5789f731988c10 267-269,275,288,291-296
+  s_8eb1d5ba7fccf1::t_30614699e25580 52
+  s_8eb1d5ba7fccf1::t_7a73943221f30b 12
+src/components/Icons.tsx
+  s_8eb1d5ba7fccf1::t_85d4a4c1a941fd 122-138
+  s_8eb1d5ba7fccf1::t_b12caa1d181908 72-121
+  s_8eb1d5ba7fccf1::t_812e974f0844c3 1-54,139-154
+  s_8eb1d5ba7fccf1::t_a30193550eadfd 55-71
+src/pages/Site/FrontmatterPanel.tsx
+  s_8eb1d5ba7fccf1::t_6dfc26fab4414f 1-3,5-153,156-162
+  s_8eb1d5ba7fccf1::t_b3b2e039567d96 4,154-155
+e2e/gitFixture.ts
+  s_8eb1d5ba7fccf1::t_27633bb83c032e 3
+  s_8eb1d5ba7fccf1::t_854cb9ba87217d 155-178
+  s_8eb1d5ba7fccf1::t_b475b1d47d9598 104-105,110-113,127,129-131,133,135,138-139,142,152-154,179-193
+  s_8eb1d5ba7fccf1::t_b138f3afbd1343 49
+  s_8eb1d5ba7fccf1::t_0d6f27d3a9e253 1-2,4-48,50-103,106-109,114-126,128,132,134,136-137,140-141,143-151,194-270
+src/utils/useAuthStatus.ts
+  s_8eb1d5ba7fccf1::t_55836d4655c4aa 1-16
+src/pages/Site/editorExtensions.ts
+  s_8eb1d5ba7fccf1::t_edba2f5e8f9ec0 4,8,11
+  s_8eb1d5ba7fccf1::t_29a236fb6d7321 27-28,40-63
+  s_8eb1d5ba7fccf1::t_20946eb5c82a79 125
+  s_8eb1d5ba7fccf1::t_a9ce757df74a51 15
+  s_8eb1d5ba7fccf1::t_c6457662312ce8 140-150
+  s_8eb1d5ba7fccf1::t_91c21d9fa4ec35 139,154
+  s_8eb1d5ba7fccf1::t_1056275d0bfb5c 1-3,5-7,9-10,12-14,16-26,29-39,64-124,126-138,151-153,155-162
+electron/tsconfig.json
+  s_8eb1d5ba7fccf1::t_a167beda721207 14
+src/pages/Welcome/AccountArea.tsx
+  s_8eb1d5ba7fccf1::t_c59f5e526280ca 1-56
+public/favicon.svg
+  s_cc7ba07e7a922c::t_0c88f0ae979eca 1-49,51
+.github/workflows/e2e.yml
+  s_8eb1d5ba7fccf1::t_215ab3627fe208 30,32,35
+src/components/SignInModal.tsx
+  s_8eb1d5ba7fccf1::t_e247c4eb2c953c 37-38,40-41
+  s_8eb1d5ba7fccf1::t_c8c9df9a3536b0 148-151,166-169
+  s_8eb1d5ba7fccf1::t_3111b5b7b91c8b 2
+  s_8eb1d5ba7fccf1::t_b0737065a07389 51-54
+  s_8eb1d5ba7fccf1::t_6144b679a43ab4 62-73
+  s_8eb1d5ba7fccf1::t_55c20a909afbb0 25,39,42
+  s_8eb1d5ba7fccf1::t_7d41d37ca28378 144-145
+  s_8eb1d5ba7fccf1::t_9306d19481e8fc 1,3-24,26-36,43-50,55-61,74-112,121-143,146-147,152-165,170-182
+  s_8eb1d5ba7fccf1::t_91b67d683fe32c 113-120
+electron/githubAuth.cts
+  s_8eb1d5ba7fccf1::t_61ac0df89fc7ff 14-15,20-21,23,31,35
+  s_8eb1d5ba7fccf1::t_299a89e823df9e 16-19
+  s_8eb1d5ba7fccf1::t_b0d6e2e882e6d3 1-13,22,24-30,32-34,36-295
+src/pages/Welcome/GoLiveStep.tsx
+  s_8eb1d5ba7fccf1::t_76644082d3f167 61-62,64-65
+  s_8eb1d5ba7fccf1::t_348d9d3e0c9a13 1-60,63,66-73,78-95,100-129,133-225
+  s_8eb1d5ba7fccf1::t_9c97ed91acdd54 74-77,96-99,130-132
+src/pages/Site/frontmatterEditing.ts
+  s_8eb1d5ba7fccf1::t_77fa169361ee28 109
+  s_8eb1d5ba7fccf1::t_7f639441ae2d9d 3
+  s_8eb1d5ba7fccf1::t_f17d758c61e6ea 160-161
+  s_8eb1d5ba7fccf1::t_6e7910c83ed1ff 1-2,4-24,29-106,108,110-159,162-191
+  s_8eb1d5ba7fccf1::t_b3b2e039567d96 25-28
+  s_8eb1d5ba7fccf1::t_2b79c49254ccbe 107
+src/pages/Site/livePreview/assetUrl.ts
+  s_8eb1d5ba7fccf1::t_0623c413ca215b 1-5
+package.json
+  s_8eb1d5ba7fccf1::t_0e69e3aebfbfd2 41
+  s_8eb1d5ba7fccf1::t_57c841fcc5890f 38,43
+  s_8eb1d5ba7fccf1::t_2c0445d781e524 34-36,39-40,42,46
+  s_8eb1d5ba7fccf1::t_a732da8a5e4bed 28-29
+  s_8eb1d5ba7fccf1::t_c3c82827466fcb 37
+src/pages/Site/previewRoute.ts
+  s_8eb1d5ba7fccf1::t_2db38180d3a518 13
+  s_8eb1d5ba7fccf1::t_a0e427ba5d3805 1-5,8-12,14-45
+  s_8eb1d5ba7fccf1::t_d0e099930ec1e7 6-7
+src/pages/Site/SiteStatusBar.tsx
+  s_8eb1d5ba7fccf1::t_213d75576bff81 70-72
+  s_8eb1d5ba7fccf1::t_a546267af1a9f7 43,47
+  s_8eb1d5ba7fccf1::t_ae72fefcb85632 79-81,83-86
+  s_8eb1d5ba7fccf1::t_195fb2677d4069 82
+  s_8eb1d5ba7fccf1::t_5bf05c89cbd74b 1-10,12-14,16-42,44-46,48-69,73-78,87-127
+  s_8eb1d5ba7fccf1::t_765c82ba2ca513 11,15
+electron/coreRunner.cts
+  s_8eb1d5ba7fccf1::t_7c4799cc103e3c 1-34
+src/pages/Welcome/index.tsx
+  s_8eb1d5ba7fccf1::t_9abfa360b28b1b 35,38-39,42
+  s_8eb1d5ba7fccf1::t_b1984ab4887251 1-6,12-34,36-37,43-58,60-66,68-73,75-80,82-83,85-87,121,124,126,153,198-201
+  s_8eb1d5ba7fccf1::t_67f2c828d3457f 7-10
+  s_8eb1d5ba7fccf1::t_b8520f36c66b4f 40
+  s_8eb1d5ba7fccf1::t_6f611ca9ea3af7 128-129
+  s_8eb1d5ba7fccf1::t_f58063e6810b25 11
+  s_8eb1d5ba7fccf1::t_d5e66004bca001 184-185,197
+  s_8eb1d5ba7fccf1::t_4ea9f789dc6d09 41
+  s_8eb1d5ba7fccf1::t_e7c173c583dcfd 59,67,74,81,84
+  s_8eb1d5ba7fccf1::t_f225ce89bd9244 186-193
+  s_8eb1d5ba7fccf1::t_2ff01571f15016 94-120,122-123,125,127,130-152,154-183
+  s_8eb1d5ba7fccf1::t_c00619c0fc9d64 88-93
+  s_8eb1d5ba7fccf1::t_1f51496bba580c 194-196
+BRIEF.md
+  s_af9b9583c20b34::t_4bd7685b93dff9 9-32,42
+src/components/ModalDialog.tsx
+  s_8eb1d5ba7fccf1::t_599eec263515ec 1,3-6,9-10,18-20,30-35,41,46,51-52,56-60
+  s_8eb1d5ba7fccf1::t_05f7222a6054d2 21-29
+  s_8eb1d5ba7fccf1::t_778c4b735f97e6 43,47-50,53-55
+  s_8eb1d5ba7fccf1::t_829aa95cacbf13 2,7,11-14,16-17,42,44-45
+  s_8eb1d5ba7fccf1::t_a9cf095c9bd5eb 8,15,36-40
+src/pages/Site/PagesTree.tsx
+  s_8eb1d5ba7fccf1::t_bdf07ee974ad09 1-118
+src/utils/classNames.ts
+  s_8eb1d5ba7fccf1::t_2e9593c44dfa99 1-4
+src/types/nefantaris.d.ts
+  s_8eb1d5ba7fccf1::t_5694c9d8f5498b 4
+  s_8eb1d5ba7fccf1::t_6963f0ba8bc7b8 1-3,5-7
+electron/siteValidation.cts
+  s_8eb1d5ba7fccf1::t_0ffb185669ba94 1-5,7-44
+  s_8eb1d5ba7fccf1::t_c910202c2fe58e 6
+e2e/shell.spec.ts
+  s_8eb1d5ba7fccf1::t_b0415f83f774fe 3,10-18,20-25,32-47,49-73,77-118
+  s_8eb1d5ba7fccf1::t_c910202c2fe58e 26-30
+  s_8eb1d5ba7fccf1::t_2e1f35a25dd7ab 1-2,4-9,19
+  s_8eb1d5ba7fccf1::t_ab6bbc4026ccd8 48
+  s_8eb1d5ba7fccf1::t_ff3f9d4e487d77 31
+  s_8eb1d5ba7fccf1::t_71be72e8663a36 74-76
+e2e/fakeCore.ts
+  s_8eb1d5ba7fccf1::t_a605858bacba75 118,122
+  s_8eb1d5ba7fccf1::t_ac211d429cc11d 13,16-17,19-20,24-29,31-40,42-67,70-94,96-101,103-105,107-117,119-121,123-135,141
+  s_8eb1d5ba7fccf1::t_17fa0ea36a7a36 1-7,15,18,21-23,30,41,68-69,95,102,106,136-140,142-150
+  s_8eb1d5ba7fccf1::t_c1da66907919d4 8-12
+  s_8eb1d5ba7fccf1::t_1431a0cc53d69b 14
+src/utils/relativeTime.ts
+  s_8eb1d5ba7fccf1::t_c06451f21c6d08 1-22
+src/pages/Site/RowActions.tsx
+  s_8eb1d5ba7fccf1::t_e4fa7ff4424a25 1-35
+src/pages/Site/ConflictModal.tsx
+  s_8eb1d5ba7fccf1::t_213d75576bff81 93-94,222-225
+  s_8eb1d5ba7fccf1::t_14d434c30abc16 1-92,95-221,226-255
+electron/contentFiles.cts
+  s_8eb1d5ba7fccf1::t_20161884844fa4 1-37,39-90,94-187
+  s_8eb1d5ba7fccf1::t_46ea191f35210f 38
+  s_8eb1d5ba7fccf1::t_20946eb5c82a79 91-93
+electron/ipcContract.cts
+  s_8eb1d5ba7fccf1::t_cd02d56093afd7 309-323
+  s_8eb1d5ba7fccf1::t_6b738b235e5a6e 18-58,60-61,63-67,216-222,224-249,328
+  s_8eb1d5ba7fccf1::t_d4221c7d7b9fa2 258-269,329
+  s_8eb1d5ba7fccf1::t_9c97ed91acdd54 185-190
+  s_8eb1d5ba7fccf1::t_b9f5fa6100e63d 140-173,175-176,193-209
+  s_8eb1d5ba7fccf1::t_14466355a24001 270-297
+  s_8eb1d5ba7fccf1::t_91071257bb4ba4 88-93
+  s_8eb1d5ba7fccf1::t_c910202c2fe58e 2,11
+  s_8eb1d5ba7fccf1::t_5584d1410c8ce3 254-257
+  s_8eb1d5ba7fccf1::t_b791e0ec0d731a 94-139
+  s_8eb1d5ba7fccf1::t_20946eb5c82a79 59,62
+  s_8eb1d5ba7fccf1::t_9b50ebbc3aa65a 174,177-184,191-192
+  s_8eb1d5ba7fccf1::t_fca3f6e454dfff 223
+  s_8eb1d5ba7fccf1::t_52b569ecb38b9c 250-253
+  s_8eb1d5ba7fccf1::t_1182bec0bd4e78 68-87
+  s_8eb1d5ba7fccf1::t_f2bbfeb6cafe62 298-308,331-333
+  s_8eb1d5ba7fccf1::t_ef2c89fe4fc57d 330
+  s_8eb1d5ba7fccf1::t_7a9188560ca709 1,3-10,12-17,210-215,324-327,334-345
+src/app.css
+  s_8eb1d5ba7fccf1::t_b96c3e22b1ae07 14-15
+e2e/inspect.spec.ts
+  s_8eb1d5ba7fccf1::t_8a543fbf5fcc74 1-50
+src/pages/Site/contentTypes.ts
+  s_8eb1d5ba7fccf1::t_31707ba8270776 1-11
+electron/tokenStore.cts
+  s_8eb1d5ba7fccf1::t_b90c4e27bae9a3 1-117
+src/pages/Site/EditorPane.tsx
+  s_8eb1d5ba7fccf1::t_d0a7aed6ba1b09 2,7-10,26-32,36-48,52-59,111,117-130,133,136-158,160-162,170-196,215-218,225-228,231-240,243-249,268-279,281-285,308-310
+  s_8eb1d5ba7fccf1::t_62c09ec7c21fcb 131-132,134-135
+  s_8eb1d5ba7fccf1::t_f4a979a06fbb90 229-230
+  s_8eb1d5ba7fccf1::t_eedbce684bf440 159
+  s_8eb1d5ba7fccf1::t_4589bbcf5d5e7a 1,3-4,6,12-25,33-35,49-51,60-77,82-97,102-108,110,112-113,115-116,163-169,197-214,219-224,250-267,280,286-307
+  s_8eb1d5ba7fccf1::t_a57bca26aca2fc 98-101,109,114
+  s_8eb1d5ba7fccf1::t_b3b2e039567d96 78-81
+  s_8eb1d5ba7fccf1::t_c69428e967cc24 5,11
+  s_8eb1d5ba7fccf1::t_abfd331d4f601a 241-242
+electron/siteInspect.cts
+  s_8eb1d5ba7fccf1::t_1e2c995ffa52a6 1-3,5-74,134,139-141
+  s_8eb1d5ba7fccf1::t_b38f18a5278fab 75-133,135-138
+  s_8eb1d5ba7fccf1::t_6988b02b0bfe8c 4
+electron/devServer.cts
+  s_8eb1d5ba7fccf1::t_df32195d37b38e 1-70,72-121,124-146,148-236,238-302
+  s_8eb1d5ba7fccf1::t_1bfead7bcdba5a 237
+  s_8eb1d5ba7fccf1::t_13eb17e2ee835b 71
+  s_8eb1d5ba7fccf1::t_cefbc5e335943e 122-123
+  s_8eb1d5ba7fccf1::t_4143a05e01b94d 147
+electron/assetProtocol.cts
+  s_8eb1d5ba7fccf1::t_3ad2b20d7cc30e 33
+  s_8eb1d5ba7fccf1::t_397b3e4a3a3bb4 1-32,34-52
+e2e/frontmatter.spec.ts
+  s_8eb1d5ba7fccf1::t_a043484ceef688 2-56,58-64,66,70,72-97,99,105,108,110,112-118,121-134,136,138-162,164,166-180,183,186-201,203,205,207-211,213-214,216-219,222-232,235-237,270-310,315-323
+  s_8eb1d5ba7fccf1::t_5188c9b97c36dd 163,165
+  s_8eb1d5ba7fccf1::t_35b3c238f92f37 67-69
+  s_8eb1d5ba7fccf1::t_a0cfd89cf5acf2 57,65,71
+  s_8eb1d5ba7fccf1::t_093ab9308acc8f 119-120
+  s_8eb1d5ba7fccf1::t_b181cee2d7fc75 202,204,206,212
+  s_8eb1d5ba7fccf1::t_67f8cbd1eb7c09 215,220-221,233-234,238-269
+  s_8eb1d5ba7fccf1::t_7d28e5d730290e 135,137
+  s_8eb1d5ba7fccf1::t_36fd51d91a371f 181-182,184-185
+  s_8eb1d5ba7fccf1::t_622e2afe95c31f 311-314
+  s_8eb1d5ba7fccf1::t_c35597804a9feb 98,100-104,106-107,109,111
+  s_8eb1d5ba7fccf1::t_0b0daa7bbda885 1
+src/pages/Site/UpdateBanner.tsx
+  s_8eb1d5ba7fccf1::t_8986f05e3d5cfd 1-44
+src/App.tsx
+  s_8eb1d5ba7fccf1::t_e7c173c583dcfd 11
+  s_8eb1d5ba7fccf1::t_572e56c3833fe6 1-4,7,10,12-13,18
+  s_8eb1d5ba7fccf1::t_0058aff81ba29d 19-21
+src/pages/Site/index.tsx
+  s_8eb1d5ba7fccf1::t_ab46961699c275 104-112,114-122
+  s_8eb1d5ba7fccf1::t_de9e4cb702d6bb 176-180
+  s_8eb1d5ba7fccf1::t_57ac592e65c00f 231
+  s_8eb1d5ba7fccf1::t_b1a8575d18a681 341-357,361-370,374-402
+  s_8eb1d5ba7fccf1::t_fa6b1a88ab5577 185-191,205-230,232-245,247-249,251-253
+  s_8eb1d5ba7fccf1::t_cae61f08a78946 358-360,371-373
+  s_8eb1d5ba7fccf1::t_7ed9b1f231d590 439-444
+  s_8eb1d5ba7fccf1::t_24c1ce6016c58d 168-175
+  s_8eb1d5ba7fccf1::t_72af8b4d97ffda 123-124,127,136-141,162-166
+  s_8eb1d5ba7fccf1::t_014374a761df95 619-630,634-635,637-642
+  s_8eb1d5ba7fccf1::t_e9fae3cfcf267f 631-633
+  s_8eb1d5ba7fccf1::t_c643878401ecb3 35-37,39-40,403-405,500-508,517,584,643-647
+  s_8eb1d5ba7fccf1::t_52a449950592a2 409,417
+  s_8eb1d5ba7fccf1::t_3941ee68e173b4 18
+  s_8eb1d5ba7fccf1::t_43dfadf9687570 408,414-416,418
+  s_8eb1d5ba7fccf1::t_b7738755991e42 246
+  s_8eb1d5ba7fccf1::t_46c74706c43a7e 155-156
+  s_8eb1d5ba7fccf1::t_213d75576bff81 151-153,636
+  s_8eb1d5ba7fccf1::t_0022fa660b27aa 585-590,592-594,596
+  s_8eb1d5ba7fccf1::t_d9d67d577c5c4e 528-562,564-569,571-581,583
+  s_8eb1d5ba7fccf1::t_af6cca157067b8 7-8,11,15-16,20,29,32-34
+  s_8eb1d5ba7fccf1::t_1c2ab4d9ae15a6 142-150,154
+  s_8eb1d5ba7fccf1::t_5c32590690e3bc 1-4
+  s_8eb1d5ba7fccf1::t_81fd66f347ea58 563,570
+  s_8eb1d5ba7fccf1::t_ac00e78aa1196f 495
+  s_8eb1d5ba7fccf1::t_a3fd00752a1f3e 591,595
+  s_8eb1d5ba7fccf1::t_2718dfab57721b 68-89
+  s_8eb1d5ba7fccf1::t_93e6934a869310 509-516
+  s_8eb1d5ba7fccf1::t_d0ea7153a7d5ab 132-134
+  s_8eb1d5ba7fccf1::t_40846b0db3955a 13,19,27-28
+  s_8eb1d5ba7fccf1::t_18b1a28c9aef34 410-412,421-427,450-468
+  s_8eb1d5ba7fccf1::t_1fc3c6c8b1ab59 113
+  s_8eb1d5ba7fccf1::t_4a97cf5b6b882e 14
+  s_8eb1d5ba7fccf1::t_93d9f33fb662a0 129
+  s_8eb1d5ba7fccf1::t_306e639b2bdc13 486
+  s_8eb1d5ba7fccf1::t_88458996a6acfe 413,428-438,445-449
+  s_8eb1d5ba7fccf1::t_8d10eef5186bb6 5-6,9-10,12,17,21-26,30-31,38,41-67,90-103,125-126,128,130-131,135,157-161,167,181-184,192-204,250,254-340,406-407,419-420,469-485,487-494,496-499,518-527,582,597-618
+src/pages/Site/livePreview/widgets.ts
+  s_8eb1d5ba7fccf1::t_e2f8731ce0fb6b 1-226
+e2e/helpers.ts
+  s_8eb1d5ba7fccf1::t_1397b4ba7ae42e 1-8,10-42,44-47,53-73
+  s_8eb1d5ba7fccf1::t_9492ea06daf789 9
+  s_8eb1d5ba7fccf1::t_d65767dc770d87 43,48-52
+e2e/fakeGithub.ts
+  s_8eb1d5ba7fccf1::t_efd921b5a4bf5c 122,126-127,131
+  s_8eb1d5ba7fccf1::t_c1da66907919d4 123-125
+  s_8eb1d5ba7fccf1::t_9f6569d72b750e 80
+  s_8eb1d5ba7fccf1::t_4baff1e8488362 1-21,24-79,81-121,128-130,132-163,169-229
+  s_8eb1d5ba7fccf1::t_e082a2ee3cb65a 22-23
+  s_8eb1d5ba7fccf1::t_befffec8b7b8f0 164-168
+electron/contentWatcher.cts
+  s_8eb1d5ba7fccf1::t_de3ead02e47027 1-59
+src/pages/Site/livePreview/linkInteraction.ts
+  s_8eb1d5ba7fccf1::t_a7ac8b97fb7472 1-49
+src/pages/Site/PreviewPane.tsx
+  s_8eb1d5ba7fccf1::t_f157d2906785d5 30
+  s_8eb1d5ba7fccf1::t_590f6528ba5cd3 1-29,31-116
+electron/githubApi.cts
+  s_8eb1d5ba7fccf1::t_6e85354af89b24 31-32
+  s_8eb1d5ba7fccf1::t_9da56566098cd2 105-107
+  s_8eb1d5ba7fccf1::t_75ba0df094825d 1-30,33-104,108-120
+src/pages/Site/Sidebar.tsx
+  s_8eb1d5ba7fccf1::t_02498b4128d0e5 1-130
+src/pages/Site/directiveInsert.ts
+  s_8eb1d5ba7fccf1::t_99bae4d62f36ee 1-30
+electron/windows.cts
+  s_8eb1d5ba7fccf1::t_3740eecf034880 43-46
+  s_8eb1d5ba7fccf1::t_b5257118616537 1,3,7-42,47-94,97-98,102-104
+  s_8eb1d5ba7fccf1::t_c910202c2fe58e 2
+  s_8eb1d5ba7fccf1::t_c4a43fa99daacc 96,100
+  s_8eb1d5ba7fccf1::t_730c108ae97d4c 6
+  s_8eb1d5ba7fccf1::t_20946eb5c82a79 4
+  s_8eb1d5ba7fccf1::t_7ce4b9ebfa1ccb 95,99
+  s_8eb1d5ba7fccf1::t_c67eb8baa86882 5
+  s_8eb1d5ba7fccf1::t_b496c079f9ffec 101
+electron/git/gitLayer.cts
+  s_8eb1d5ba7fccf1::t_f39b5773ef71e0 64-65
+  s_8eb1d5ba7fccf1::t_213d75576bff81 55
+  s_8eb1d5ba7fccf1::t_a309d877324d4c 57-62,66-70
+  s_8eb1d5ba7fccf1::t_0061b1bb3a4a58 1-54,56,63,71-95
+electron/git/siteSync.cts
+  s_8eb1d5ba7fccf1::t_b4ed97c67eddfb 136-143,145-149
+  s_8eb1d5ba7fccf1::t_0899697725b690 144
+  s_8eb1d5ba7fccf1::t_5b2255a52dfcf8 67-74,79,82
+  s_8eb1d5ba7fccf1::t_82418e57dd3b40 348-353,368-369
+  s_8eb1d5ba7fccf1::t_10d225fcd37efa 77-78,80-81
+  s_8eb1d5ba7fccf1::t_213d75576bff81 124-126,294-298,321-323,362-366
+  s_8eb1d5ba7fccf1::t_c380f5dbf03b7d 1-9,11,14-66,75-76,83-123,127-135,150-293,299-320,324-347,354-361,367,370-481
+  s_8eb1d5ba7fccf1::t_15bd987f222854 10,12-13
+e2e/connect.spec.ts
+  s_8eb1d5ba7fccf1::t_2ff01571f15016 131
+  s_8eb1d5ba7fccf1::t_ffd4162b13a28a 1-130,132-139
+electron/git/gitLayerInstance.cts
+  s_8eb1d5ba7fccf1::t_91b5b8042732ce 1-5
+src/pages/Site/livePreview/index.ts
+  s_8eb1d5ba7fccf1::t_1c5ebc1aba7686 1-2,4-21
+  s_8eb1d5ba7fccf1::t_3ad2b20d7cc30e 3
+src/pages/Site/FrontmatterTextField.tsx
+  s_8eb1d5ba7fccf1::t_a12a28735f8d16 1-121
+src/pages/Site/PublishModal.tsx
+  s_8eb1d5ba7fccf1::t_d1ae2fd9ab6276 1-68
+src/pages/Welcome/NamePlaceStep.tsx
+  s_8eb1d5ba7fccf1::t_73b97f56672b0f 1-36,38-208
+  s_8eb1d5ba7fccf1::t_8a2951631f8059 37
+electron/contentTree.cts
+  s_8eb1d5ba7fccf1::t_9c375a5ea50078 51,53,56,64,66,72
+  s_8eb1d5ba7fccf1::t_ec208ca5e300c5 11-12
+  s_8eb1d5ba7fccf1::t_137e44a677d7fd 62
+  s_8eb1d5ba7fccf1::t_423bff7af93b49 78
+  s_8eb1d5ba7fccf1::t_20946eb5c82a79 32-34,68-70,89-91
+  s_8eb1d5ba7fccf1::t_7c697fa0647f3a 1-10,13-31,35-50,52,54-55,57-61,63,65,67,71,73-77,79-88,92-99,101-112
+  s_8eb1d5ba7fccf1::t_94381eaef294cc 100
+src/pages/Welcome/PutOnlineStep.tsx
+  s_8eb1d5ba7fccf1::t_03c22107a538a7 1-119,122,131-213
+  s_8eb1d5ba7fccf1::t_9c97ed91acdd54 120-121
+  s_8eb1d5ba7fccf1::t_cf71f511065578 123-130
+electron/frontmatter.cts
+  s_8eb1d5ba7fccf1::t_b5b7fb600b604f 1-7,9-51
+  s_8eb1d5ba7fccf1::t_9423c6a4515c35 8
+src/main.tsx
+  s_8eb1d5ba7fccf1::t_3bd98557758af8 11
+src/pages/Welcome/CreateSiteWizard.tsx
+  s_8eb1d5ba7fccf1::t_9c97ed91acdd54 55-59
+  s_8eb1d5ba7fccf1::t_93b931b24aab2c 1-54,60-153
+electron/recentSites.cts
+  s_8eb1d5ba7fccf1::t_7935e44e95e5e3 1-62
+e2e/createSite.spec.ts
+  s_8eb1d5ba7fccf1::t_ec122814de69fe 2-43,45-234,238-248,252-268
+  s_8eb1d5ba7fccf1::t_fc4d05f27ad97c 44
+  s_8eb1d5ba7fccf1::t_55612a0cdc83cc 1
+  s_8eb1d5ba7fccf1::t_c1da66907919d4 235-237,249-251
+src/pages/Site/livePreview/documentRegions.ts
+  s_8eb1d5ba7fccf1::t_6595911f226ff7 97
+  s_8eb1d5ba7fccf1::t_d796e5c0b14a8c 1-96,98-122
+electron/siteCreate.cts
+  s_8eb1d5ba7fccf1::t_debbbf18566cf5 1-60,62-119
+  s_8eb1d5ba7fccf1::t_67381b7614efa3 61
+src/pages/Site/frontmatterHiding.ts
+  s_8eb1d5ba7fccf1::t_6b3c1cb467015a 1-97
+electron/main.cts
+  s_8eb1d5ba7fccf1::t_30b56fc5d98884 6
+  s_8eb1d5ba7fccf1::t_0e69e9388286ac 34-52
+  s_8eb1d5ba7fccf1::t_015b8e5472d641 7-8,10-13,19-20,24
+  s_8eb1d5ba7fccf1::t_5fa4e995bdbab5 2-5,15,18
+  s_8eb1d5ba7fccf1::t_ae0d675f6d89b5 14
+src/pages/Site/InsertDirectiveModal.tsx
+  s_8eb1d5ba7fccf1::t_2db67b4c4784bb 38-40
+  s_8eb1d5ba7fccf1::t_9468b6e27bf3c0 18,23
+  s_8eb1d5ba7fccf1::t_b3b2e039567d96 52-56
+  s_8eb1d5ba7fccf1::t_13780de9681e2d 2-15,17,28-36,42-51,57-60,62-74
+  s_8eb1d5ba7fccf1::t_82c27b6db6eed0 1
+  s_8eb1d5ba7fccf1::t_42fd495a51fe64 16,19-22
+  s_8eb1d5ba7fccf1::t_9cd3fc11f57e6a 24-27,37,41,61
+electron/ipcHandlers.cts
+  s_8eb1d5ba7fccf1::t_f5dbcb687304a9 174-203
+  s_8eb1d5ba7fccf1::t_7710446abdc2f3 42-51
+  s_8eb1d5ba7fccf1::t_bd0fd447fb3f59 137-138
+  s_8eb1d5ba7fccf1::t_b36417e84013fb 29-35
+  s_8eb1d5ba7fccf1::t_3ad2b20d7cc30e 227-230
+  s_8eb1d5ba7fccf1::t_af58534f798917 204-224
+  s_8eb1d5ba7fccf1::t_3a6de5c1a0ddfc 1,3,36-41,53-102,243
+  s_8eb1d5ba7fccf1::t_3251cd4801e0a5 14-18
+  s_8eb1d5ba7fccf1::t_75a23958739179 2
+  s_8eb1d5ba7fccf1::t_74240e9b0095e7 136,225-226,231-242
+  s_8eb1d5ba7fccf1::t_901a64c97fb7d8 244-281
+  s_8eb1d5ba7fccf1::t_f110ca5d529e62 139-151
+  s_8eb1d5ba7fccf1::t_95e84ffc2fa454 52
+  s_8eb1d5ba7fccf1::t_a60bcda1e541a7 20-28
+  s_8eb1d5ba7fccf1::t_fc0d5994449a24 114
+  s_8eb1d5ba7fccf1::t_2b85735887de57 103-113,115-135
+  s_8eb1d5ba7fccf1::t_4f84ebf5d1d3bc 4-13
+  s_8eb1d5ba7fccf1::t_904c8a79552cc3 152-173
+  s_8eb1d5ba7fccf1::t_9c97ed91acdd54 19
+src/pages/Welcome/ConnectSiteModal.tsx
+  s_8eb1d5ba7fccf1::t_266708c88d88a5 1-218
+package-lock.json
+  s_8eb1d5ba7fccf1::t_283280145fecbd 10,12-21,24,315-717,1413-1589,1645-1650,3184-3195,3651-3656,3862-3885,4152-4157,4325-4342,4573-4578,5721-5738,6544-6563,7088-7157,7808-7816,8242-8247,8313-8321,8578-8586,9178-9217,9337-9381,9607-9612,9804-9837,10539-10544,10751-10765
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "c3f9e44aae156b425c36f5e26bbe397bc73ff152",
+  "prompts": {},
+  "sessions": {
+    "s_8eb1d5ba7fccf1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdc151f1-545a-4c3f-b655-4e6539e9ecd4",
+        "model": "claude-fable-5"
+      },
+      "human_author": "adamjsturge <adamjsturge@gmail.com>"
+    },
+    "s_af9b9583c20b34": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2004ad69-6a32-4e6e-abe4-3c1dc11cccad",
+        "model": "claude-fable-5"
+      },
+      "human_author": "adamjsturge <adamjsturge@gmail.com>"
+    },
+    "s_cc7ba07e7a922c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbbdab62dfferGHSuIt6zjO3Yk",
+        "model": "auto:balanced"
+      },
+      "human_author": "adamjsturge <adamjsturge@gmail.com>"
+    }
+  }
+}
