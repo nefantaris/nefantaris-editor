@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: "Inter";
+  font-family: "Open Sans";
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 400 700;
   font-display: swap;
-  src: url("/fonts/InterVariable.woff2") format("woff2");
+  src: url("/fonts/OpenSansVariable.woff2") format("woff2");
 }
 
 @theme {
   --font-sans:
-    "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono:
     ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
