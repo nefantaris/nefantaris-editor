@@ -1,0 +1,21 @@
+electron/siteInspect.cts
+  s_f61f199c0fba29::t_411b00414e3375 71
+  s_f61f199c0fba29::t_f993ea7c574f0f 18-37
+  s_f61f199c0fba29::t_484b093597d7ab 107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "d7fb28323016a2f00e3deab30f1cc3cd0dd76d01",
+  "prompts": {},
+  "sessions": {
+    "s_f61f199c0fba29": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e4a12695-5be9-45f1-9d42-07f57945fe3a",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "adamjsturge <adamjsturge@gmail.com>"
+    }
+  }
+}
