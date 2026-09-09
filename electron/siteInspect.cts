@@ -15,6 +15,26 @@ function stringArrayFrom(value: unknown): string[] {
   return value.filter((item): item is string => typeof item === "string");
 }
 
+function pluginNamesFrom(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.flatMap((item: unknown): string[] => {
+    if (typeof item === "string") {
+      return [item];
+    }
+    if (
+      typeof item === "object" &&
+      item !== null &&
+      "name" in item &&
+      typeof item.name === "string"
+    ) {
+      return [item.name];
+    }
+    return [];
+  });
+}
+
 function navItemsFrom(value: unknown): SiteNavItem[] {
   if (!Array.isArray(value)) {
     return [];
@@ -48,7 +68,7 @@ function readSiteConfig(sitePath: string): SiteConfig {
     name:
       "name" in parsed && typeof parsed.name === "string" ? parsed.name : "",
     nav: "nav" in parsed ? navItemsFrom(parsed.nav) : [],
-    plugins: "plugins" in parsed ? stringArrayFrom(parsed.plugins) : [],
+    plugins: "plugins" in parsed ? pluginNamesFrom(parsed.plugins) : [],
   };
 }
 
@@ -84,7 +104,7 @@ function siteConfigFrom(value: unknown): SiteConfig | null {
   return {
     name: value.name,
     nav: "nav" in value ? navItemsFrom(value.nav) : [],
-    plugins: "plugins" in value ? stringArrayFrom(value.plugins) : [],
+    plugins: "plugins" in value ? pluginNamesFrom(value.plugins) : [],
   };
 }
 
