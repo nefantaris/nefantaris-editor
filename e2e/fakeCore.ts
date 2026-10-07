@@ -96,8 +96,13 @@ function runInspect(args) {
 }
 
 function runInit(args) {
-  const [siteDir, themeFlag, themeSource] = args;
-  if (!siteDir || themeFlag !== "--theme" || !themeSource) {
+  const [siteDir, ...flagArgs] = args;
+  const options = {};
+  for (let index = 0; index < flagArgs.length; index += 2) {
+    options[flagArgs[index]] = flagArgs[index + 1];
+  }
+  const themeSource = options["--theme"];
+  if (!siteDir || !themeSource) {
     fail("fake core: unexpected init arguments: " + args.join(" "));
   }
   if (process.env.FAKE_CORE_INIT_BEHAVIOR === "fail") {
@@ -110,8 +115,12 @@ function runInit(args) {
     path.join(siteDir, "nefantaris.json"),
     JSON.stringify(
       {
-        name: "Fake Site",
-        theme: { source: themeSource, version: "local" },
+        name: options["--name"] ?? path.basename(siteDir),
+        theme: {
+          source: themeSource,
+          version: options["--theme-version"] ?? "local",
+        },
+        plugins: JSON.parse(process.env.FAKE_CORE_INIT_PLUGINS ?? "[]"),
       },
       null,
       4,

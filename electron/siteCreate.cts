@@ -1,15 +1,27 @@
-import { app } from "electron";
 import fs from "node:fs";
 import path from "node:path";
 import { runCoreCommand } from "./coreRunner.cjs";
 import { gitLayer } from "./git/gitLayerInstance.cjs";
 import { resolveIdentity } from "./git/siteSync.cjs";
-import type { CreateSiteResult, NewSitePlan } from "./ipcContract.cjs";
+import type {
+  CreateSiteResult,
+  NewSitePlan,
+  ThemeChoice,
+} from "./ipcContract.cjs";
 import { recordRecentSite } from "./recentSites.cjs";
+import {
+  pinNamedPlugins,
+  pinVersion,
+  repositoryUrlFor,
+} from "./sourcePins.cjs";
 import { broadcast } from "./typedIpc.cjs";
 
 const DEFAULT_BRANCH = "main";
 const FIRST_COMMIT_MESSAGE = "First version";
+const OFFLINE_MESSAGE =
+  "You seem to be offline. Creating a site downloads its theme, so connect to the internet and try again.";
+const THEME_LINK_MESSAGE =
+  "Paste the theme's web address. It starts with https://, like https://github.com/you/your-theme.";
 
 function folderNameFor(siteName: string): string {
   return siteName
@@ -31,27 +43,25 @@ export function planNewSite(
   return { folderName, targetPath, isTaken: fs.existsSync(targetPath) };
 }
 
-export function defaultThemeFolder(): string | null {
-  const candidate = path.resolve(
-    app.getAppPath(),
-    "..",
-    "nefantaris-theme-base",
-  );
-  return fs.existsSync(candidate) ? candidate : null;
-}
-
-function isJsonObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function applySiteName(sitePath: string, siteName: string): void {
-  const configPath = path.join(sitePath, "nefantaris.json");
-  const parsed: unknown = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  if (!isJsonObject(parsed) || parsed.name === siteName) {
-    return;
+function isWebAddress(value: string): boolean {
+  try {
+    const { protocol } = new URL(value);
+    return protocol === "https:" || protocol === "http:";
+  } catch {
+    return false;
   }
-  const config = { ...parsed, name: siteName };
-  fs.writeFileSync(configPath, `${JSON.stringify(config, null, 4)}\n`);
+}
+
+function themeUrlFor(theme: ThemeChoice): string | null {
+  if (theme.kind === "firstParty") {
+    return repositoryUrlFor(theme.name);
+  }
+  const url = theme.url.trim();
+  return isWebAddress(url) ? url : null;
+}
+
+function unreachableMessage(isOffline: boolean, notFound: string): string {
+  return isOffline ? OFFLINE_MESSAGE : notFound;
 }
 
 function initFailureMessage(stderr: string): string {
@@ -68,7 +78,7 @@ function initFailureMessage(stderr: string): string {
 export async function createNewSite(
   parentFolder: string,
   siteName: string,
-  themeFolder: string,
+  theme: ThemeChoice,
 ): Promise<CreateSiteResult> {
   const plan = planNewSite(parentFolder, siteName);
   if (plan.targetPath === null) {
@@ -80,11 +90,29 @@ export async function createNewSite(
   if (plan.isTaken) {
     return { status: "folder-exists", path: plan.targetPath };
   }
+  const themeUrl = themeUrlFor(theme);
+  if (themeUrl === null) {
+    return { status: "failed", message: THEME_LINK_MESSAGE };
+  }
+  const themePin = await pinVersion(themeUrl);
+  if (themePin.status === "unreachable") {
+    return {
+      status: "failed",
+      message: unreachableMessage(
+        themePin.isOffline,
+        `There's no theme at ${themeUrl} that can be downloaded. Check the address — the theme has to be a public git repository.`,
+      ),
+    };
+  }
   const run = await runCoreCommand([
     "init",
     plan.targetPath,
     "--theme",
-    themeFolder,
+    themeUrl,
+    "--theme-version",
+    themePin.version,
+    "--name",
+    siteName,
   ]);
   if (run.status === "core-missing") {
     return {
@@ -97,7 +125,17 @@ export async function createNewSite(
     fs.rmSync(plan.targetPath, { recursive: true, force: true });
     return { status: "failed", message: initFailureMessage(run.stderr) };
   }
-  applySiteName(plan.targetPath, siteName);
+  const pluginPin = await pinNamedPlugins(plan.targetPath);
+  if (pluginPin.status === "unreachable") {
+    fs.rmSync(plan.targetPath, { recursive: true, force: true });
+    return {
+      status: "failed",
+      message: unreachableMessage(
+        pluginPin.isOffline,
+        `Your theme needs the add-on “${pluginPin.pluginName}”, but it couldn't be downloaded from ${pluginPin.url}.`,
+      ),
+    };
+  }
   await gitLayer.initRepo(plan.targetPath, DEFAULT_BRANCH);
   await gitLayer.commitAll(
     plan.targetPath,

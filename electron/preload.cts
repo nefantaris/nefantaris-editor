@@ -42,7 +42,6 @@ const invokeChannels: Record<keyof IpcInvokeMap, true> = {
   "sites:discardClone": true,
   "sites:pickCreateParent": true,
   "sites:planCreate": true,
-  "sites:defaultThemeFolder": true,
   "sites:create": true,
   "sites:setOnlineRemote": true,
   "liveness:check": true,

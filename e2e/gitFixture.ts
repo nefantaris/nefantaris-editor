@@ -176,6 +176,43 @@ export async function createEmptyRemoteRoot(
   };
 }
 
+export type ReleasedRepo = {
+  name: string;
+  tags: string[];
+};
+
+export type ReleasedRepoRoot = {
+  urlBase: string;
+  headOidFor: (name: string) => Promise<string>;
+};
+
+export async function createReleasedRepos(
+  repos: ReleasedRepo[],
+): Promise<ReleasedRepoRoot> {
+  const rootPath = await createTempDir("nefantaris-released-");
+  const seedRoot = await createTempDir("nefantaris-released-seed-");
+  for (const repo of repos) {
+    const seedPath = path.join(seedRoot, repo.name);
+    await mkdir(seedPath);
+    await runGit(seedPath, ["init", "-b", "main"]);
+    await runGit(seedPath, ["config", "user.name", "Seed Author"]);
+    await runGit(seedPath, ["config", "user.email", "seed@test.local"]);
+    await writeFixtureFiles(seedPath, { "README.md": `# ${repo.name}\n` });
+    await runGit(seedPath, ["add", "-A"]);
+    await runGit(seedPath, ["commit", "-m", "First version"]);
+    for (const tag of repo.tags) {
+      await runGit(seedPath, ["tag", tag]);
+    }
+    await runGit(rootPath, ["clone", "--bare", seedPath, repo.name]);
+  }
+  const { port } = await startGitHttpServer(rootPath);
+  return {
+    urlBase: `http://127.0.0.1:${port}`,
+    headOidFor: async (name: string) =>
+      (await runGit(path.join(rootPath, name), ["rev-parse", "main"])).trim(),
+  };
+}
+
 export async function createGitSite(
   name: string,
   files: Record<string, string>,

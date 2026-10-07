@@ -1,10 +1,16 @@
-import { useEffect, useId, useState } from "react";
-import type { NewSitePlan } from "../../../electron/ipcContract.cts";
+import { useId, useState } from "react";
+import type {
+  NewSitePlan,
+  ThemeChoice,
+} from "../../../electron/ipcContract.cts";
 import type { CreatedSite } from "./CreateSiteWizard.tsx";
 import {
+  wizardInputClasses,
   wizardPrimaryButtonClasses,
   wizardSecondaryButtonClasses,
 } from "./CreateSiteWizard.tsx";
+import type { ThemeKey } from "./ThemePicker.tsx";
+import ThemePicker from "./ThemePicker.tsx";
 
 type NamePlaceStepProps = {
   onBusyChanged: (isBusy: boolean) => void;
@@ -12,31 +18,31 @@ type NamePlaceStepProps = {
   onCreated: (site: CreatedSite) => void;
 };
 
-const inputClasses =
-  "bg-brand-background text-brand-black placeholder:text-brand-gray focus:ring-brand-primary rounded-md p-3 focus:ring-2 focus:outline-none";
-
 const NamePlaceStep = ({
   onBusyChanged,
   onCancelRequested,
   onCreated,
 }: NamePlaceStepProps) => {
   const nameFieldId = useId();
-  const themeFieldId = useId();
   const [siteName, setSiteName] = useState("");
   const [parentFolder, setParentFolder] = useState<string | null>(null);
   const [plan, setPlan] = useState<NewSitePlan | null>(null);
-  const [themeFolder, setThemeFolder] = useState<string | null>(null);
+  const [themeKey, setThemeKey] = useState<ThemeKey>("nefantaris-theme-base");
+  const [customThemeUrl, setCustomThemeUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
-  const themeValue = themeFolder ?? "";
+  const theme: ThemeChoice =
+    themeKey === "custom"
+      ? { kind: "gitUrl", url: customThemeUrl.trim() }
+      : { kind: "firstParty", name: themeKey };
   const canCreate =
     !isCreating &&
     siteName.trim() !== "" &&
     plan !== null &&
     plan.targetPath !== null &&
     !plan.isTaken &&
-    themeValue.trim() !== "";
+    (theme.kind === "firstParty" || theme.url !== "");
 
   const refreshPlan = async (nextParent: string | null, nextName: string) => {
     if (nextParent === null || nextName.trim() === "") {
@@ -77,7 +83,7 @@ const NamePlaceStep = ({
       "sites:create",
       parentFolder,
       siteName.trim(),
-      themeValue.trim(),
+      theme,
     );
     setIsCreating(false);
     onBusyChanged(false);
@@ -99,23 +105,12 @@ const NamePlaceStep = ({
     setError(result.message);
   };
 
-  useEffect(() => {
-    const loadDefaultTheme = async () => {
-      const suggested = await globalThis.nefantaris.invoke(
-        "sites:defaultThemeFolder",
-      );
-      if (suggested !== null) {
-        setThemeFolder((current) => current ?? suggested);
-      }
-    };
-    void loadDefaultTheme();
-  }, []);
-
   return (
     <>
       <p className="text-brand-grayDark text-sm">
-        Pick a name and a place on this computer. You can put it online in the
-        next step.
+        Pick a name, a place on this computer, and a theme. You can put it
+        online in the next step. Creating a site downloads its theme, so
+        you&rsquo;ll need to be online.
       </p>
       {error && (
         <p role="alert" className="text-brand-danger text-sm">
@@ -136,7 +131,7 @@ const NamePlaceStep = ({
           disabled={isCreating}
           onChange={(event) => changeSiteName(event.target.value)}
           placeholder="My Garden Journal"
-          className={inputClasses}
+          className={wizardInputClasses}
         />
       </div>
       <div className="flex flex-col gap-1">
@@ -161,28 +156,16 @@ const NamePlaceStep = ({
           </p>
         )}
       </div>
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor={themeFieldId}
-          className="text-brand-grayDark text-xs font-medium"
-        >
-          Theme folder
-        </label>
-        <input
-          id={themeFieldId}
-          type="text"
-          value={themeValue}
-          disabled={isCreating}
-          onChange={(event) => setThemeFolder(event.target.value)}
-          className={inputClasses}
-        />
-        <p className="text-brand-gray text-xs">
-          The folder on this computer that holds your site&rsquo;s design.
-        </p>
-      </div>
+      <ThemePicker
+        selectedKey={themeKey}
+        customUrl={customThemeUrl}
+        isDisabled={isCreating}
+        onKeySelected={setThemeKey}
+        onCustomUrlChanged={setCustomThemeUrl}
+      />
       {isCreating && (
         <p aria-live="polite" className="text-brand-gray text-sm">
-          Creating your site…
+          Creating your site and downloading its theme…
         </p>
       )}
       <div className="flex flex-col gap-3 sm:flex-row">

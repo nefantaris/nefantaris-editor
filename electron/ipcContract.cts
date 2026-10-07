@@ -181,6 +181,13 @@ export type NewSitePlan = {
   isTaken: boolean;
 };
 
+export type FirstPartyThemeName =
+  "nefantaris-theme-base" | "nefantaris-theme-resume" | "nefantaris-theme-docs";
+
+export type ThemeChoice =
+  | { kind: "firstParty"; name: FirstPartyThemeName }
+  | { kind: "gitUrl"; url: string };
+
 export type CreateSiteResult =
   | {
       status: "created";
@@ -311,9 +318,8 @@ export type IpcInvokeMap = {
     args: [parentFolder: string, siteName: string];
     result: NewSitePlan;
   };
-  "sites:defaultThemeFolder": { args: []; result: string | null };
   "sites:create": {
-    args: [parentFolder: string, siteName: string, themeFolder: string];
+    args: [parentFolder: string, siteName: string, theme: ThemeChoice];
     result: CreateSiteResult;
   };
   "sites:setOnlineRemote": {

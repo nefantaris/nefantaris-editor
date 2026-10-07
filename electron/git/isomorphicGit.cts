@@ -13,6 +13,7 @@ import {
   fetch as gitFetch,
   init,
   listRemotes,
+  listServerRefs,
   log,
   merge,
   push,
@@ -47,6 +48,7 @@ import type {
 
 const TEMP_OURS_REF = "refs/nefantaris/merge-ours";
 const TEMP_THEIRS_REF = "refs/nefantaris/merge-theirs";
+const TAG_REF_PREFIX = "refs/tags/";
 
 class RemoteRefusedPushError extends Error {}
 
@@ -613,6 +615,23 @@ export function createIsomorphicGitLayer(
     }));
   };
 
+  const listRemoteTags = async (url: string): Promise<string[]> => {
+    const refs = await listServerRefs({
+      http: gitHttp,
+      url,
+      prefix: TAG_REF_PREFIX,
+    });
+    return refs
+      .map((entry) => entry.ref)
+      .filter((ref) => ref.startsWith(TAG_REF_PREFIX))
+      .map((ref) => ref.slice(TAG_REF_PREFIX.length));
+  };
+
+  const getRemoteHead = async (url: string): Promise<string | null> => {
+    const refs = await listServerRefs({ http: gitHttp, url, prefix: "HEAD" });
+    return refs.find((entry) => entry.ref === "HEAD")?.oid ?? null;
+  };
+
   const classifyFailure = (error: unknown): GitFailure => {
     if (error instanceof Errors.HttpError) {
       const statusCode = error.data.statusCode;
@@ -652,6 +671,8 @@ export function createIsomorphicGitLayer(
     completeMergeFromRemote,
     pushToRemote,
     listHistory,
+    listRemoteTags,
+    getRemoteHead,
     classifyFailure,
   };
 }

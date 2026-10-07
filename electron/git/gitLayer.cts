@@ -91,5 +91,7 @@ export type GitLayer = {
   ) => Promise<void>;
   pushToRemote: (dir: string) => Promise<void>;
   listHistory: (dir: string, limit: number) => Promise<HistoryEntry[]>;
+  listRemoteTags: (url: string) => Promise<string[]>;
+  getRemoteHead: (url: string) => Promise<string | null>;
   classifyFailure: (error: unknown) => GitFailure;
 };

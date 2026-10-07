@@ -16,6 +16,8 @@ export const wizardPrimaryButtonClasses =
   "bg-brand-primary text-brand-white hover:bg-brand-primaryHover disabled:bg-brand-grayLight disabled:text-brand-disabled grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:order-2 sm:w-0";
 export const wizardSecondaryButtonClasses =
   "bg-brand-grayLight text-brand-grayDark hover:bg-brand-border grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:w-0";
+export const wizardInputClasses =
+  "bg-brand-background text-brand-black placeholder:text-brand-gray focus:ring-brand-primary rounded-md p-3 focus:ring-2 focus:outline-none";
 
 type CreateSiteWizardProps = {
   onClose: () => void;

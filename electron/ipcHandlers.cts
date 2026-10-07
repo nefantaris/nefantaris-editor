@@ -44,11 +44,7 @@ import {
   discardClonedFolder,
   pickParentFolder,
 } from "./siteConnect.cjs";
-import {
-  createNewSite,
-  defaultThemeFolder,
-  planNewSite,
-} from "./siteCreate.cjs";
+import { createNewSite, planNewSite } from "./siteCreate.cjs";
 import { inspectSite } from "./siteInspect.cjs";
 import { validateSiteFolder } from "./siteValidation.cjs";
 import { broadcast, handleInvoke } from "./typedIpc.cjs";
@@ -209,10 +205,8 @@ export function registerIpcHandlers(): void {
     planNewSite(parentFolder, siteName),
   );
 
-  handleInvoke("sites:defaultThemeFolder", () => defaultThemeFolder());
-
-  handleInvoke("sites:create", (_event, parentFolder, siteName, themeFolder) =>
-    createNewSite(parentFolder, siteName, themeFolder),
+  handleInvoke("sites:create", (_event, parentFolder, siteName, theme) =>
+    createNewSite(parentFolder, siteName, theme),
   );
 
   handleInvoke("sites:setOnlineRemote", async (_event, sitePath, remoteUrl) => {
