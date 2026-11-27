@@ -5,15 +5,32 @@ import { languages } from "@codemirror/language-data";
 import { EditorState, type Extension } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
+import type { EditorCommand } from "./formatting/editorCommands.ts";
+import type { ImageFileHandler } from "./formatting/pasteHandling.ts";
+import { pasteHandling, pastePlainText } from "./formatting/pasteHandling.ts";
+import { revealLineExtension } from "./formatting/revealLine.ts";
+import type { SlashPickHandler } from "./formatting/slashMenu.ts";
+import { slashMenu } from "./formatting/slashMenu.ts";
 import { livePreviewExtensions } from "./livePreview/index.ts";
 
 export type EditorExtensionsConfig = {
   sitePath: string;
   lineSeparator: string | null;
   onDocChanged: () => void;
-  onImageFile: (view: EditorView, file: File, insertPos: number) => void;
+  onSelectionOrDocChanged: (view: EditorView) => void;
+  onImageFile: ImageFileHandler;
   onInsertDirectiveRequested: () => void;
+  onBlockOptionsRequested: (lineFrom: number) => void;
+  onCommandRequested: (command: EditorCommand) => void;
+  onSlashPicked: SlashPickHandler;
 };
+
+const shortcutCommands: { key: string; command: EditorCommand }[] = [
+  { key: "Mod-b", command: "bold" },
+  { key: "Mod-i", command: "italic" },
+  { key: "Mod-Shift-x", command: "strikethrough" },
+  { key: "Mod-k", command: "link" },
+];
 
 export function detectLineSeparator(text: string): string | null {
   if (!text.includes("\r\n")) {
@@ -23,51 +40,47 @@ export function detectLineSeparator(text: string): string | null {
 }
 
 const markdownHighlighting = HighlightStyle.define([
-  { tag: tags.heading1, fontSize: "1.5em", fontWeight: "700" },
-  { tag: tags.heading2, fontSize: "1.25em", fontWeight: "700" },
+  { tag: tags.heading1, fontSize: "1.5em", fontWeight: "600" },
+  { tag: tags.heading2, fontSize: "1.25em", fontWeight: "600" },
   { tag: tags.heading3, fontSize: "1.125em", fontWeight: "600" },
   { tag: tags.heading, fontWeight: "600" },
   { tag: tags.strong, fontWeight: "700" },
   { tag: tags.emphasis, fontStyle: "italic" },
   { tag: tags.strikethrough, textDecoration: "line-through" },
-  { tag: tags.link, color: "var(--color-brand-primary)" },
-  { tag: tags.url, color: "var(--color-brand-primary)" },
+  { tag: tags.link, color: "var(--color-primary-ink)" },
+  { tag: tags.url, color: "var(--color-primary-ink)" },
   { tag: tags.monospace, fontFamily: "var(--font-mono)", fontSize: "0.9em" },
-  { tag: tags.quote, color: "var(--color-brand-grayDark)" },
-  { tag: tags.meta, color: "var(--color-brand-gray)" },
-  { tag: tags.processingInstruction, color: "var(--color-brand-gray)" },
-  { tag: tags.contentSeparator, color: "var(--color-brand-gray)" },
-  { tag: tags.keyword, color: "var(--color-brand-secondary)" },
+  { tag: tags.quote, color: "var(--color-ink-secondary)" },
+  { tag: tags.meta, color: "var(--color-ink-muted)" },
+  { tag: tags.processingInstruction, color: "var(--color-ink-muted)" },
+  { tag: tags.contentSeparator, color: "var(--color-ink-muted)" },
+  { tag: tags.keyword, color: "var(--color-code-keyword)" },
   {
     tag: [tags.string, tags.special(tags.string)],
-    color: "var(--color-brand-success)",
+    color: "var(--color-code-string)",
   },
-  {
-    tag: tags.comment,
-    color: "var(--color-brand-gray)",
-    fontStyle: "italic",
-  },
+  { tag: tags.comment, color: "var(--color-ink-muted)" },
   {
     tag: [tags.number, tags.bool, tags.atom, tags.literal],
-    color: "var(--color-brand-primaryActive)",
+    color: "var(--color-code-number)",
   },
   {
     tag: [tags.typeName, tags.className, tags.tagName],
-    color: "var(--color-brand-secondaryActive)",
+    color: "var(--color-code-type)",
   },
   {
     tag: [tags.function(tags.variableName), tags.function(tags.propertyName)],
-    color: "var(--color-brand-primary)",
+    color: "var(--color-code-keyword)",
   },
-  { tag: tags.propertyName, color: "var(--color-brand-primaryHover)" },
-  { tag: tags.operator, color: "var(--color-brand-grayDark)" },
+  { tag: tags.propertyName, color: "var(--color-code-type)" },
+  { tag: tags.operator, color: "var(--color-ink-secondary)" },
 ]);
 
 const editorTheme = EditorView.theme({
   "&": {
     height: "100%",
-    backgroundColor: "var(--color-brand-white)",
-    color: "var(--color-brand-black)",
+    backgroundColor: "var(--color-surface)",
+    color: "var(--color-ink)",
     fontSize: "1rem",
   },
   "&.cm-focused": {
@@ -82,51 +95,19 @@ const editorTheme = EditorView.theme({
     maxWidth: "44rem",
     margin: "0 auto",
     padding: "3rem 1.5rem",
-    caretColor: "var(--color-brand-black)",
+    caretColor: "var(--color-ink)",
   },
   ".cm-cursor": {
-    borderLeftColor: "var(--color-brand-black)",
+    borderLeftColor: "var(--color-ink)",
   },
-  ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": {
-    backgroundColor: "var(--color-brand-grayLight)",
+  ".cm-selectionBackground": {
+    backgroundColor: "var(--color-raised-strong)",
+  },
+  "&.cm-focused .cm-selectionBackground": {
+    backgroundColor:
+      "color-mix(in srgb, var(--color-primary) 22%, transparent)",
   },
 });
-
-function firstImageFile(dataTransfer: DataTransfer | null): File | null {
-  if (!dataTransfer) {
-    return null;
-  }
-  for (const item of dataTransfer.items) {
-    if (item.kind === "file" && item.type.startsWith("image/")) {
-      return item.getAsFile();
-    }
-  }
-  return null;
-}
-
-function imageTransferHandlers(config: EditorExtensionsConfig): Extension {
-  return EditorView.domEventHandlers({
-    paste: (event, view) => {
-      const file = firstImageFile(event.clipboardData);
-      if (!file) {
-        return false;
-      }
-      event.preventDefault();
-      config.onImageFile(view, file, view.state.selection.main.head);
-      return true;
-    },
-    drop: (event, view) => {
-      const file = firstImageFile(event.dataTransfer);
-      if (!file) {
-        return false;
-      }
-      event.preventDefault();
-      const dropPos = view.posAtCoords({ x: event.clientX, y: event.clientY });
-      config.onImageFile(view, file, dropPos ?? view.state.selection.main.head);
-      return true;
-    },
-  });
-}
 
 export function createEditorExtensions(
   config: EditorExtensionsConfig,
@@ -145,18 +126,34 @@ export function createEditorExtensions(
           return true;
         },
       },
+      ...shortcutCommands.map(({ key, command }) => ({
+        key,
+        run: () => {
+          config.onCommandRequested(command);
+          return true;
+        },
+      })),
+      { key: "Mod-Shift-v", run: pastePlainText },
       ...defaultKeymap,
       ...historyKeymap,
     ]),
     EditorView.lineWrapping,
     syntaxHighlighting(markdownHighlighting),
     editorTheme,
-    ...livePreviewExtensions({ sitePath: config.sitePath }),
+    ...livePreviewExtensions({
+      sitePath: config.sitePath,
+      onBlockOptionsRequested: config.onBlockOptionsRequested,
+    }),
     EditorView.updateListener.of((update) => {
       if (update.docChanged) {
         config.onDocChanged();
       }
+      if (update.docChanged || update.selectionSet) {
+        config.onSelectionOrDocChanged(update.view);
+      }
     }),
-    imageTransferHandlers(config),
+    pasteHandling(config.onImageFile),
+    slashMenu(config.onSlashPicked),
+    revealLineExtension,
   ];
 }

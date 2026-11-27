@@ -13,11 +13,11 @@ export type CreatedSite = {
 };
 
 export const wizardPrimaryButtonClasses =
-  "bg-brand-primary text-brand-white hover:bg-brand-primaryHover disabled:bg-brand-grayLight disabled:text-brand-disabled grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:order-2 sm:w-0";
+  "bg-primary text-on-primary hover:bg-primary-hover disabled:bg-raised disabled:text-ink-disabled grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:order-2 sm:w-0";
 export const wizardSecondaryButtonClasses =
-  "bg-brand-grayLight text-brand-grayDark hover:bg-brand-border grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:w-0";
+  "bg-raised text-ink-secondary hover:bg-raised-strong grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:w-0";
 export const wizardInputClasses =
-  "bg-brand-background text-brand-black placeholder:text-brand-gray focus:ring-brand-primary rounded-md p-3 focus:ring-2 focus:outline-none";
+  "bg-field text-ink placeholder:text-ink-muted focus:ring-primary rounded-md p-3 focus:ring-2 focus:outline-none";
 
 type CreateSiteWizardProps = {
   onClose: () => void;
@@ -73,25 +73,23 @@ const CreateSiteWizard = ({ onClose }: CreateSiteWizardProps) => {
               className={classNames(
                 "flex size-5 items-center justify-center rounded-full",
                 index < currentStepIndex
-                  ? "bg-brand-success text-brand-white"
+                  ? "bg-success text-on-success"
                   : index === currentStepIndex
-                    ? "bg-brand-primary text-brand-white"
-                    : "bg-brand-grayLight text-brand-gray",
+                    ? "bg-primary text-on-primary"
+                    : "bg-raised text-ink-muted",
               )}
             >
               {index < currentStepIndex ? <CheckIcon /> : index + 1}
             </span>
             <span
               className={
-                index === currentStepIndex
-                  ? "text-brand-black"
-                  : "text-brand-gray"
+                index === currentStepIndex ? "text-ink" : "text-ink-muted"
               }
             >
               {label}
             </span>
             {index < stepLabels.length - 1 && (
-              <span aria-hidden="true" className="bg-brand-border h-px w-3" />
+              <span aria-hidden="true" className="bg-line h-px w-3" />
             )}
           </li>
         ))}
@@ -134,7 +132,7 @@ const CreateSiteWizard = ({ onClose }: CreateSiteWizardProps) => {
       )}
       {stage.kind === "done" && (
         <>
-          <p className="text-brand-grayDark">{stage.summary}</p>
+          <p className="text-ink-secondary">{stage.summary}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <button
               onClick={() => openCreatedSite(stage.site)}

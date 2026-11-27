@@ -2,48 +2,46 @@ import { EditorView } from "@codemirror/view";
 
 export const livePreviewTheme = EditorView.theme({
   ".nef-link": {
-    color: "var(--color-brand-primary)",
+    color: "var(--color-primary-ink)",
     textDecoration: "underline",
     cursor: "pointer",
   },
   ".nef-inline-code": {
-    backgroundColor: "var(--color-brand-grayLight)",
+    backgroundColor: "var(--color-raised)",
     borderRadius: "0.375rem",
     padding: "0.0625rem 0.25rem",
   },
   ".nef-footnote-ref": {
     fontSize: "0.75em",
     verticalAlign: "super",
-    color: "var(--color-brand-primary)",
+    color: "var(--color-primary-ink)",
   },
   ".nef-footnote-def": {
-    color: "var(--color-brand-grayDark)",
+    color: "var(--color-ink-secondary)",
     fontSize: "0.875em",
   },
   ".nef-list-mark": {
-    color: "var(--color-brand-gray)",
+    color: "var(--color-ink-muted)",
   },
   ".nef-bullet": {
-    color: "var(--color-brand-gray)",
+    color: "var(--color-ink-muted)",
   },
   ".nef-quote-line": {
-    borderLeft: "3px solid var(--color-brand-grayLight)",
+    borderLeft: "3px solid var(--color-raised-strong)",
     paddingLeft: "0.75rem",
-    color: "var(--color-brand-grayDark)",
+    color: "var(--color-ink-secondary)",
   },
   ".nef-code-line": {
-    backgroundColor: "var(--color-brand-background)",
+    backgroundColor: "var(--color-sunken)",
     fontFamily: "var(--font-mono)",
   },
   ".nef-code-fence": {
-    color: "var(--color-brand-gray)",
+    color: "var(--color-ink-muted)",
+    fontFamily: "var(--font-mono)",
     fontSize: "0.75rem",
-    fontWeight: "600",
-    textTransform: "uppercase",
-    letterSpacing: "0.05em",
   },
   ".nef-frontmatter-line": {
-    color: "var(--color-brand-gray)",
+    color: "var(--color-ink-muted)",
     fontFamily: "var(--font-mono)",
     fontSize: "0.8125em",
   },
@@ -55,11 +53,11 @@ export const livePreviewTheme = EditorView.theme({
     fontStyle: "normal",
   },
   ".nef-frontmatter-fence": {
-    color: "var(--color-brand-border)",
+    color: "var(--color-ink-disabled)",
     letterSpacing: "0.25em",
   },
   ".nef-task-checkbox": {
-    accentColor: "var(--color-brand-primary)",
+    accentColor: "var(--color-primary)",
     width: "0.9375rem",
     height: "0.9375rem",
     marginRight: "0.25rem",
@@ -70,10 +68,10 @@ export const livePreviewTheme = EditorView.theme({
     display: "inline-block",
     width: "100%",
     verticalAlign: "middle",
-    borderTop: "2px solid var(--color-brand-grayLight)",
+    borderTop: "2px solid var(--color-raised-strong)",
   },
   ".nef-directive-line": {
-    backgroundColor: "var(--color-brand-background)",
+    backgroundColor: "var(--color-sunken)",
   },
   ".nef-directive-fence": {
     display: "inline-flex",
@@ -81,34 +79,60 @@ export const livePreviewTheme = EditorView.theme({
     gap: "0.375rem",
     width: "100%",
     padding: "0.125rem 0.5rem",
-    backgroundColor: "var(--color-brand-grayLight)",
+    backgroundColor: "var(--color-raised)",
     borderRadius: "0.375rem",
     cursor: "pointer",
-    transitionProperty: "background-color",
+    transitionProperty: "background-color, color",
     transitionDuration: "100ms",
     transitionTimingFunction: "ease-in-out",
   },
   ".nef-directive-fence:hover": {
-    backgroundColor: "var(--color-brand-border)",
+    backgroundColor: "var(--color-raised-strong)",
   },
   ".nef-directive-fence-close": {
-    minHeight: "0.625rem",
+    minHeight: "0.5rem",
+    backgroundColor: "transparent",
+  },
+  ".nef-directive-fence-close:hover": {
+    backgroundColor: "var(--color-raised)",
   },
   ".nef-directive-name": {
-    color: "var(--color-brand-grayDark)",
+    color: "var(--color-ink-secondary)",
+    fontSize: "0.8125rem",
+    fontWeight: "500",
+  },
+  ".nef-directive-options": {
+    marginLeft: "auto",
+    padding: "0 0.5rem",
+    border: "none",
+    borderRadius: "0.375rem",
+    backgroundColor: "var(--color-surface)",
+    color: "var(--color-ink-secondary)",
+    fontFamily: "var(--font-sans)",
     fontSize: "0.75rem",
-    fontWeight: "600",
-    textTransform: "uppercase",
-    letterSpacing: "0.05em",
+    fontWeight: "500",
+    lineHeight: "1.5rem",
+    cursor: "pointer",
+    transitionProperty: "background-color, color",
+    transitionDuration: "100ms",
+    transitionTimingFunction: "ease-in-out",
+  },
+  ".nef-directive-options:hover": {
+    backgroundColor: "var(--color-sunken)",
+    color: "var(--color-ink)",
+  },
+  ".nef-directive-options:focus-visible": {
+    outline: "2px solid var(--color-primary-ink)",
+    outlineOffset: "2px",
   },
   ".nef-directive-source": {
     fontFamily: "var(--font-mono)",
-    color: "var(--color-brand-gray)",
+    color: "var(--color-ink-muted)",
   },
   ".nef-table-source": {
     fontFamily: "var(--font-mono)",
     fontSize: "0.875em",
-    backgroundColor: "var(--color-brand-background)",
+    backgroundColor: "var(--color-sunken)",
   },
   ".nef-table-source span": {
     fontFamily: "inherit",
@@ -121,12 +145,12 @@ export const livePreviewTheme = EditorView.theme({
     borderCollapse: "collapse",
   },
   ".nef-table-widget th, .nef-table-widget td": {
-    border: "1px solid var(--color-brand-grayLight)",
+    border: "1px solid var(--color-line)",
     padding: "0.375rem 0.75rem",
     textAlign: "left",
   },
   ".nef-table-widget th": {
-    backgroundColor: "var(--color-brand-background)",
+    backgroundColor: "var(--color-sunken)",
     fontWeight: "600",
   },
   '.nef-table-widget [data-align="center"]': {
@@ -147,10 +171,10 @@ export const livePreviewTheme = EditorView.theme({
   ".nef-image-placeholder": {
     display: "inline-block",
     padding: "0.25rem 0.75rem",
-    border: "1px dashed var(--color-brand-border)",
+    border: "1px dashed var(--color-line)",
     borderRadius: "0.375rem",
-    color: "var(--color-brand-gray)",
+    color: "var(--color-ink-muted)",
     fontSize: "0.875em",
-    backgroundColor: "var(--color-brand-background)",
+    backgroundColor: "var(--color-sunken)",
   },
 });

@@ -3,7 +3,7 @@ import { app, utilityProcess } from "electron";
 import { execFile } from "node:child_process";
 import net from "node:net";
 import path from "node:path";
-import type { PreviewStatus } from "./ipcContract.cjs";
+import type { PreviewProblem, PreviewStatus } from "./ipcContract.cjs";
 import { broadcast } from "./typedIpc.cjs";
 
 const READY_TIMEOUT_MS = 60_000;
@@ -13,6 +13,17 @@ const MAX_RESTART_ATTEMPTS = 3;
 const RESTART_BACKOFF_MS = 500;
 const KILL_GRACE_MS = 3000;
 const LOG_TAIL_LIMIT_CHARS = 8000;
+const PROBLEM_DETAIL_LINE_LIMIT = 8;
+
+const ansiPattern = new RegExp(String.raw`\u001B\[[0-9;?]*[A-Za-z]`, "g");
+const problemStartPattern =
+  /\[vite\] (?:Internal server error|Pre-transform error):\s*(.*)$/;
+const problemFilePattern = /^\s*File:\s*(.+?)(?::(\d+)(?::\d+)?)?\s*$/;
+const problemDetailEndPattern = /^\s*(?:at\s|Plugin:|File:)/;
+const recoveryPattern =
+  /\[vite\] (?:\(client\) )?(?:hmr update|page reload)(.*)$/;
+const generatedSourceMarker = "/.nefantaris/src/";
+const generatedThemeMarker = "/.nefantaris/src/theme/";
 
 const bundledCoreDir: string | null = null;
 
@@ -31,11 +42,19 @@ function coreDevEntryPath(): string {
   return path.join(resolveCoreDir(), "dist", "cli", "index.js");
 }
 
+type TrackedProblem = {
+  problem: PreviewProblem;
+  servedPath: string | null;
+  isCollecting: boolean;
+};
+
 type PreviewServer = {
   child: UtilityProcess | null;
   childPid: number | null;
   status: PreviewStatus;
   logTail: string;
+  partialLine: string;
+  tracked: TrackedProblem | null;
   restartAttempts: number;
   isStopping: boolean;
   generation: number;
@@ -62,6 +81,100 @@ function appendLog(server: PreviewServer, chunk: Buffer): void {
   server.logTail = (server.logTail + chunk.toString("utf8")).slice(
     -LOG_TAIL_LIMIT_CHARS,
   );
+}
+
+function siteFileOf(generatedPath: string): string | null {
+  const normalized = generatedPath.split(path.sep).join("/");
+  const themeIndex = normalized.indexOf(generatedThemeMarker);
+  if (themeIndex !== -1) {
+    return normalized.slice(themeIndex + generatedThemeMarker.length);
+  }
+  return normalized.endsWith(`${generatedSourceMarker}custom.css`)
+    ? "custom.css"
+    : null;
+}
+
+function servedPathOf(generatedPath: string): string | null {
+  const normalized = generatedPath.split(path.sep).join("/");
+  const sourceIndex = normalized.indexOf(generatedSourceMarker);
+  return sourceIndex === -1
+    ? null
+    : normalized.slice(sourceIndex + generatedSourceMarker.length - 1);
+}
+
+function trackedAfterLine(
+  tracked: TrackedProblem | null,
+  line: string,
+): TrackedProblem | null {
+  const start = problemStartPattern.exec(line);
+  if (start !== null) {
+    return {
+      problem: { file: null, line: null, detail: start[1].trim() },
+      servedPath: null,
+      isCollecting: true,
+    };
+  }
+  const recovery = recoveryPattern.exec(line);
+  if (recovery !== null) {
+    const isRecovered =
+      tracked !== null &&
+      (tracked.servedPath === null || recovery[1].includes(tracked.servedPath));
+    return isRecovered ? null : tracked;
+  }
+  if (tracked === null || !tracked.isCollecting) {
+    return tracked;
+  }
+  const file = problemFilePattern.exec(line);
+  if (file !== null) {
+    return {
+      problem: {
+        ...tracked.problem,
+        file: siteFileOf(file[1]),
+        line: file[2] === undefined ? null : Number(file[2]),
+      },
+      servedPath: servedPathOf(file[1]),
+      isCollecting: false,
+    };
+  }
+  const detailLines = tracked.problem.detail.split("\n");
+  if (
+    problemDetailEndPattern.test(line) ||
+    line.trim() === "" ||
+    detailLines.length >= PROBLEM_DETAIL_LINE_LIMIT
+  ) {
+    return tracked;
+  }
+  return {
+    ...tracked,
+    problem: {
+      ...tracked.problem,
+      detail: [...detailLines, line.trimEnd()].join("\n"),
+    },
+  };
+}
+
+function currentProblemOf(server: PreviewServer): PreviewProblem | null {
+  return server.tracked?.problem ?? null;
+}
+
+function trackProblems(
+  sitePath: string,
+  server: PreviewServer,
+  chunk: Buffer,
+): void {
+  const lines = (server.partialLine + chunk.toString("utf8")).split(/\r?\n/);
+  server.partialLine = lines.pop() ?? "";
+  const before = currentProblemOf(server);
+  for (const line of lines) {
+    server.tracked = trackedAfterLine(
+      server.tracked,
+      line.replaceAll(ansiPattern, ""),
+    );
+  }
+  const after = currentProblemOf(server);
+  if (before !== after && server.status.state === "ready") {
+    updateStatus(sitePath, server, { ...server.status, problem: after });
+  }
 }
 
 function pickFreePort(): Promise<number> {
@@ -208,8 +321,16 @@ async function runSpawnCycle(
   updateStatus(sitePath, server, { state: "starting" });
   const port = await pickFreePort();
   const child = utilityProcess.fork(
-    coreDevEntryPath(),
-    ["dev", sitePath, "--port", String(port), "--strictPort"],
+    path.join(__dirname, "coreDevHost.cjs"),
+    [
+      coreDevEntryPath(),
+      "dev",
+      sitePath,
+      "--editor",
+      "--port",
+      String(port),
+      "--strictPort",
+    ],
     {
       stdio: "pipe",
       serviceName: `nef-dev ${path.basename(sitePath)}`,
@@ -220,8 +341,14 @@ async function runSpawnCycle(
   child.once("spawn", () => {
     server.childPid = child.pid ?? null;
   });
-  child.stdout?.on("data", (chunk: Buffer) => appendLog(server, chunk));
-  child.stderr?.on("data", (chunk: Buffer) => appendLog(server, chunk));
+  server.partialLine = "";
+  server.tracked = null;
+  const handleOutput = (chunk: Buffer) => {
+    appendLog(server, chunk);
+    trackProblems(sitePath, server, chunk);
+  };
+  child.stdout?.on("data", handleOutput);
+  child.stderr?.on("data", handleOutput);
   child.once("exit", (exitCode) => {
     if (server.generation !== generation) {
       return;
@@ -249,7 +376,11 @@ async function runSpawnCycle(
     await killChildTree(server);
     return;
   }
-  updateStatus(sitePath, server, { state: "ready", url });
+  updateStatus(sitePath, server, {
+    state: "ready",
+    url,
+    problem: currentProblemOf(server),
+  });
 }
 
 export function getPreviewStatus(sitePath: string): PreviewStatus {
@@ -269,6 +400,8 @@ export function startPreviewServer(sitePath: string): PreviewStatus {
     childPid: null,
     status: { state: "stopped" },
     logTail: "",
+    partialLine: "",
+    tracked: null,
     restartAttempts: 0,
     isStopping: false,
     generation: 0,

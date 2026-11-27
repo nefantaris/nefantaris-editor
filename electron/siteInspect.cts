@@ -3,10 +3,25 @@ import fs from "node:fs";
 import path from "node:path";
 import { runCoreCommand } from "./coreRunner.cjs";
 import type {
+  InspectedTheme,
+  PluginDetail,
   SiteConfig,
   SiteInspection,
+  SiteMode,
   SiteNavItem,
+  ThemeBreakpoint,
 } from "./ipcContract.cjs";
+import { isJsonObject, readSiteConfigSnapshot } from "./siteConfig.cjs";
+import {
+  directiveSchemasFrom,
+  inspectedThemeFrom,
+  pluginHeadTagsFrom,
+  settingDefinitionsFrom,
+  settingValuesFrom,
+  themePartsFrom,
+} from "./themeSchemas.cjs";
+
+const MODE_VOCABULARY: SiteMode[] = ["light", "dark"];
 
 function stringArrayFrom(value: unknown): string[] {
   if (!Array.isArray(value)) {
@@ -15,7 +30,7 @@ function stringArrayFrom(value: unknown): string[] {
   return value.filter((item): item is string => typeof item === "string");
 }
 
-function pluginNamesFrom(value: unknown): string[] {
+export function pluginNamesFrom(value: unknown): string[] {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -33,6 +48,62 @@ function pluginNamesFrom(value: unknown): string[] {
     }
     return [];
   });
+}
+
+function nullableStringFrom(value: unknown): string | null {
+  return typeof value === "string" ? value : null;
+}
+
+function pluginDetailsFrom(value: unknown): PluginDetail[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+  return value.flatMap((item: unknown): PluginDetail[] => {
+    if (
+      typeof item !== "object" ||
+      item === null ||
+      !("name" in item) ||
+      typeof item.name !== "string"
+    ) {
+      return [];
+    }
+    return [
+      {
+        name: item.name,
+        source: "source" in item ? nullableStringFrom(item.source) : null,
+        version: "version" in item ? nullableStringFrom(item.version) : null,
+        requiredByTheme:
+          "requiredByTheme" in item && item.requiredByTheme === true,
+        error: "error" in item ? nullableStringFrom(item.error) : null,
+        blocks: "blocks" in item ? stringArrayFrom(item.blocks) : [],
+        settings:
+          ("settings" in item ? settingDefinitionsFrom(item.settings) : null) ??
+          {},
+        settingValues:
+          "settingValues" in item ? settingValuesFrom(item.settingValues) : {},
+        head: "head" in item ? pluginHeadTagsFrom(item.head) : [],
+        functions: "functions" in item ? stringArrayFrom(item.functions) : [],
+      },
+    ];
+  });
+}
+
+function breakpointsFrom(value: unknown): ThemeBreakpoint[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+  return value.flatMap((item: unknown): ThemeBreakpoint[] =>
+    typeof item === "object" &&
+    item !== null &&
+    "name" in item &&
+    typeof item.name === "string" &&
+    "minWidth" in item &&
+    typeof item.minWidth === "number" &&
+    Number.isFinite(item.minWidth) &&
+    item.minWidth > 0
+      ? [{ name: item.name, minWidth: item.minWidth }]
+      : [],
+  );
 }
 
 function navItemsFrom(value: unknown): SiteNavItem[] {
@@ -72,14 +143,9 @@ function readSiteConfig(sitePath: string): SiteConfig {
   };
 }
 
-type ThemeShape = Omit<SiteInspection, "site">;
+type ThemeShape = Omit<SiteInspection, "site" | "themeModes" | "isFallback">;
 
-function readThemeShapeFixture(): ThemeShape {
-  const fixturePath = path.join(app.getAppPath(), "fixtures", "inspect.json");
-  const parsed: unknown = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
-  if (typeof parsed !== "object" || parsed === null) {
-    throw new Error(`Unreadable inspect fixture at ${fixturePath}`);
-  }
+function themeShapeFrom(parsed: object): ThemeShape {
   return {
     contract:
       "contract" in parsed && typeof parsed.contract === "number"
@@ -88,8 +154,33 @@ function readThemeShapeFixture(): ThemeShape {
     templates: "templates" in parsed ? stringArrayFrom(parsed.templates) : [],
     directives:
       "directives" in parsed ? stringArrayFrom(parsed.directives) : [],
+    directiveSchemas:
+      "directiveSchemas" in parsed
+        ? directiveSchemasFrom(parsed.directiveSchemas)
+        : null,
     plugins: "plugins" in parsed ? stringArrayFrom(parsed.plugins) : [],
+    pluginDetails:
+      "pluginDetails" in parsed
+        ? pluginDetailsFrom(parsed.pluginDetails)
+        : null,
+    settings:
+      "settings" in parsed ? settingDefinitionsFrom(parsed.settings) : null,
+    settingValues:
+      "settingValues" in parsed ? settingValuesFrom(parsed.settingValues) : {},
+    parts: "parts" in parsed ? themePartsFrom(parsed.parts) : null,
+    breakpoints:
+      "breakpoints" in parsed ? breakpointsFrom(parsed.breakpoints) : null,
+    theme: "theme" in parsed ? inspectedThemeFrom(parsed.theme) : null,
   };
+}
+
+function readThemeShapeFixture(): ThemeShape {
+  const fixturePath = path.join(app.getAppPath(), "fixtures", "inspect.json");
+  const parsed: unknown = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
+  if (typeof parsed !== "object" || parsed === null) {
+    throw new Error(`Unreadable inspect fixture at ${fixturePath}`);
+  }
+  return themeShapeFrom(parsed);
 }
 
 function siteConfigFrom(value: unknown): SiteConfig | null {
@@ -108,7 +199,45 @@ function siteConfigFrom(value: unknown): SiteConfig | null {
   };
 }
 
-function inspectionFrom(parsed: unknown): SiteInspection | null {
+function modeListFrom(value: unknown): SiteMode[] {
+  return MODE_VOCABULARY.filter(
+    (mode) => Array.isArray(value) && value.includes(mode),
+  );
+}
+
+function excludedModesOf(sitePath: string): SiteMode[] {
+  const snapshot = readSiteConfigSnapshot(sitePath);
+  if (snapshot.status !== "ok" || !isJsonObject(snapshot.config.modes)) {
+    return [];
+  }
+  return modeListFrom(snapshot.config.modes.exclude);
+}
+
+function themeModesFrom(value: unknown, sitePath: string): SiteMode[] | null {
+  if (typeof value !== "object" || value === null) {
+    return null;
+  }
+  const declared = "declared" in value ? modeListFrom(value.declared) : [];
+  if (declared.length > 0) {
+    return declared;
+  }
+  if (!("available" in value)) {
+    return null;
+  }
+  const available = modeListFrom(value.available);
+  if (available.length === 0) {
+    return null;
+  }
+  const excluded = excludedModesOf(sitePath);
+  return MODE_VOCABULARY.filter(
+    (mode) => available.includes(mode) || excluded.includes(mode),
+  );
+}
+
+function inspectionFrom(
+  parsed: unknown,
+  sitePath: string,
+): SiteInspection | null {
   if (
     typeof parsed !== "object" ||
     parsed === null ||
@@ -127,11 +256,11 @@ function inspectionFrom(parsed: unknown): SiteInspection | null {
     return null;
   }
   return {
-    contract: parsed.contract,
+    ...themeShapeFrom(parsed),
     site,
-    templates: stringArrayFrom(parsed.templates),
-    directives: stringArrayFrom(parsed.directives),
-    plugins: "plugins" in parsed ? stringArrayFrom(parsed.plugins) : [],
+    themeModes:
+      "modes" in parsed ? themeModesFrom(parsed.modes, sitePath) : null,
+    isFallback: false,
   };
 }
 
@@ -148,7 +277,7 @@ async function inspectThroughCore(
   } catch {
     return null;
   }
-  return inspectionFrom(parsed);
+  return inspectionFrom(parsed, sitePath);
 }
 
 export async function inspectSite(sitePath: string): Promise<SiteInspection> {
@@ -157,5 +286,17 @@ export async function inspectSite(sitePath: string): Promise<SiteInspection> {
     return inspected;
   }
   const shape = readThemeShapeFixture();
-  return { ...shape, site: readSiteConfig(sitePath) };
+  return {
+    ...shape,
+    site: readSiteConfig(sitePath),
+    themeModes: null,
+    isFallback: true,
+  };
+}
+
+export async function resolvedThemeOf(
+  sitePath: string,
+): Promise<InspectedTheme | null> {
+  const inspected = await inspectThroughCore(sitePath);
+  return inspected?.theme ?? null;
 }

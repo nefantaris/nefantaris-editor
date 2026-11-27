@@ -45,8 +45,8 @@ const PageItem = ({ page, ...handlers }: PageItemProps) => {
         className={classNames(
           "w-full truncate rounded-md px-2 py-1.5 pr-14 text-left text-sm transition-colors duration-100",
           isSelected
-            ? "bg-brand-grayLight text-brand-black font-medium"
-            : "text-brand-grayDark hover:bg-brand-grayLight",
+            ? "bg-raised text-ink font-medium"
+            : "text-ink-secondary hover:bg-raised",
         )}
       >
         {page.title}
@@ -68,7 +68,7 @@ const FolderItem = ({ folder, ...handlers }: FolderItemProps) => {
       <button
         aria-expanded={isExpanded}
         onClick={() => setIsExpanded(!isExpanded)}
-        className="text-brand-grayDark hover:bg-brand-grayLight flex w-full items-center gap-1 rounded-md px-2 py-1.5 text-left text-sm font-medium transition-colors duration-100"
+        className="text-ink-secondary hover:bg-raised flex w-full items-center gap-1 rounded-md px-2 py-1.5 text-left text-sm font-medium transition-colors duration-100"
       >
         <ChevronRightIcon
           className={classNames(
@@ -79,9 +79,9 @@ const FolderItem = ({ folder, ...handlers }: FolderItemProps) => {
         <span className="truncate">{folder.name}</span>
       </button>
       {isExpanded && (
-        <ul className="border-brand-grayLight ml-3 flex flex-col gap-0.5 border-l pl-1.5">
+        <ul className="border-line ml-3 flex flex-col gap-0.5 border-l pl-1.5">
           {folder.children.length === 0 ? (
-            <li className="text-brand-gray px-2 py-1.5 text-sm">Empty</li>
+            <li className="text-ink-muted px-2 py-1.5 text-sm">Empty</li>
           ) : (
             folder.children.map((child) =>
               child.kind === "folder" ? (

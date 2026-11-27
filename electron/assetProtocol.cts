@@ -1,6 +1,7 @@
 import { net, protocol } from "electron";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { FAVICON_FILE_PATTERN } from "./siteFiles.cjs";
 import { hasOpenSite } from "./windows.cjs";
 
 export const ASSET_SCHEME = "nefsite";
@@ -23,10 +24,13 @@ function resolveRequestedAsset(requestUrl: string): string | null {
   const url = new URL(requestUrl);
   const sitePath = url.searchParams.get("site");
   const assetPath = url.searchParams.get("file");
-  if (!sitePath || !assetPath || !assetPath.startsWith("/assets/")) {
+  if (!sitePath || !assetPath || !hasOpenSite(sitePath)) {
     return null;
   }
-  if (!hasOpenSite(sitePath)) {
+  if (FAVICON_FILE_PATTERN.test(assetPath)) {
+    return path.join(path.resolve(sitePath), "public", assetPath.slice(1));
+  }
+  if (!assetPath.startsWith("/assets/")) {
     return null;
   }
   const assetsRoot = path.join(path.resolve(sitePath), "assets");

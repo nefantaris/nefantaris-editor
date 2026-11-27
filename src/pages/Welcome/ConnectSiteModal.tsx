@@ -18,9 +18,9 @@ type ConnectPhase =
   | { kind: "invalid"; path: string };
 
 const primaryButtonClasses =
-  "bg-brand-primary text-brand-white hover:bg-brand-primaryHover grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:order-2 sm:w-0";
+  "bg-primary text-on-primary hover:bg-primary-hover grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:order-2 sm:w-0";
 const secondaryButtonClasses =
-  "bg-brand-grayLight text-brand-grayDark hover:bg-brand-border grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:w-0";
+  "bg-raised text-ink-secondary hover:bg-raised-strong grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:w-0";
 
 function connectFailureMessage(
   status: "auth-needed" | "offline" | "failed",
@@ -111,11 +111,11 @@ const ConnectSiteModal = ({ onClose }: ConnectSiteModalProps) => {
   return (
     <ModalDialog title="Connect existing site" onClose={onClose}>
       {phase.kind === "loading-repos" && (
-        <p className="text-brand-gray">Looking up your sites on GitHub…</p>
+        <p className="text-ink-muted">Looking up your sites on GitHub…</p>
       )}
       {phase.kind === "repos-failed" && (
         <>
-          <p className="text-brand-grayDark">{phase.message}</p>
+          <p className="text-ink-secondary">{phase.message}</p>
           <button onClick={onClose} className={secondaryButtonClasses}>
             Close
           </button>
@@ -123,11 +123,11 @@ const ConnectSiteModal = ({ onClose }: ConnectSiteModalProps) => {
       )}
       {phase.kind === "picking" && (
         <>
-          <p className="text-brand-grayDark text-sm">
+          <p className="text-ink-secondary text-sm">
             Pick the site you want to work on from your GitHub account.
           </p>
           {phase.error && (
-            <p role="alert" className="text-brand-danger text-sm">
+            <p role="alert" className="text-danger text-sm">
               {phase.error}
             </p>
           )}
@@ -137,10 +137,10 @@ const ConnectSiteModal = ({ onClose }: ConnectSiteModalProps) => {
             onChange={(event) => setFilter(event.target.value)}
             placeholder="Type to filter…"
             aria-label="Filter your sites"
-            className="bg-brand-background text-brand-black placeholder:text-brand-gray focus:ring-brand-primary rounded-md p-3 focus:ring-2 focus:outline-none"
+            className="bg-field text-ink placeholder:text-ink-muted focus:ring-primary rounded-md p-3 focus:ring-2 focus:outline-none"
           />
           {filteredRepos.length === 0 ? (
-            <p className="text-brand-gray text-sm">
+            <p className="text-ink-muted text-sm">
               {repos.length === 0
                 ? "There's nothing in your GitHub account yet."
                 : "Nothing matches that filter."}
@@ -154,12 +154,12 @@ const ConnectSiteModal = ({ onClose }: ConnectSiteModalProps) => {
                 <li key={repo.fullName}>
                   <button
                     onClick={() => void connectRepo(repo)}
-                    className="hover:bg-brand-grayLight flex w-full items-baseline justify-between gap-3 rounded-md p-3 text-left transition-colors duration-100"
+                    className="hover:bg-raised flex w-full items-baseline justify-between gap-3 rounded-md p-3 text-left transition-colors duration-100"
                   >
-                    <span className="text-brand-black min-w-0 truncate font-medium">
+                    <span className="text-ink min-w-0 truncate font-medium">
                       {repo.fullName}
                     </span>
-                    <span className="text-brand-gray shrink-0 text-sm">
+                    <span className="text-ink-muted shrink-0 text-sm">
                       {repo.pushedAtMs === 0
                         ? ""
                         : relativeTimeFrom(repo.pushedAtMs)}
@@ -173,7 +173,7 @@ const ConnectSiteModal = ({ onClose }: ConnectSiteModalProps) => {
       )}
       {phase.kind === "connecting" && (
         <>
-          <p className="text-brand-grayDark">Connecting your site…</p>
+          <p className="text-ink-secondary">Connecting your site…</p>
           <progress
             aria-label="Download progress"
             className="w-full"
@@ -181,17 +181,17 @@ const ConnectSiteModal = ({ onClose }: ConnectSiteModalProps) => {
               ? { value: progress.loaded, max: progress.total }
               : {})}
           />
-          <p className="text-brand-gray text-sm">
+          <p className="text-ink-muted text-sm">
             Bringing {phase.repoFullName} to this computer.
           </p>
         </>
       )}
       {phase.kind === "invalid" && (
         <>
-          <p className="text-brand-grayDark">
+          <p className="text-ink-secondary">
             This doesn&rsquo;t look like a Nefantaris site.
           </p>
-          <p className="text-brand-gray text-sm">
+          <p className="text-ink-muted text-sm">
             The files were downloaded to {phase.path}, but there&rsquo;s no
             Nefantaris site in them.
           </p>

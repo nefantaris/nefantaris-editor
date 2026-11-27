@@ -65,9 +65,27 @@ export async function stubDirectoryPicker(
   }, chosenPath);
 }
 
+async function closeWithoutAsking(app: ElectronApplication): Promise<void> {
+  try {
+    await app.evaluate(({ BrowserWindow }) => {
+      for (const openWindow of BrowserWindow.getAllWindows()) {
+        openWindow.destroy();
+      }
+    });
+  } finally {
+    await app.close();
+  }
+}
+
 export async function cleanupTestArtifacts(): Promise<void> {
-  await Promise.allSettled(launchedApps.splice(0).map((app) => app.close()));
+  await Promise.allSettled(launchedApps.splice(0).map(closeWithoutAsking));
+  if (process.env.NEFANTARIS_KEEP_E2E_TMP === "1") {
+    tempDirs.length = 0;
+    return;
+  }
   await Promise.all(
-    tempDirs.splice(0).map((dir) => rm(dir, { recursive: true, force: true })),
+    tempDirs
+      .splice(0)
+      .map((dir) => rm(dir, { recursive: true, force: true, maxRetries: 3 })),
   );
 }

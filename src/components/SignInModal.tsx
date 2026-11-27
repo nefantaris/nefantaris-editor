@@ -14,9 +14,9 @@ type SignInPhase =
   | { kind: "error" };
 
 const primaryButtonClasses =
-  "bg-brand-primary text-brand-white hover:bg-brand-primaryHover grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:order-2 sm:w-0";
+  "bg-primary text-on-primary hover:bg-primary-hover grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:order-2 sm:w-0";
 const secondaryButtonClasses =
-  "bg-brand-grayLight text-brand-grayDark hover:bg-brand-border grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:w-0";
+  "bg-raised text-ink-secondary hover:bg-raised-strong grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:w-0";
 
 const SignInModal = ({ onClose }: SignInModalProps) => {
   const [phase, setPhase] = useState<SignInPhase>({ kind: "starting" });
@@ -79,11 +79,11 @@ const SignInModal = ({ onClose }: SignInModalProps) => {
   return (
     <ModalDialog title="Sign in to GitHub" onClose={onClose}>
       {phase.kind === "starting" && (
-        <p className="text-brand-gray">Getting your sign-in code…</p>
+        <p className="text-ink-muted">Getting your sign-in code…</p>
       )}
       {phase.kind === "unconfigured" && (
         <>
-          <p className="text-brand-grayDark">
+          <p className="text-ink-secondary">
             GitHub sign-in isn&rsquo;t configured in this build yet.
           </p>
           <button onClick={onClose} className={secondaryButtonClasses}>
@@ -93,30 +93,30 @@ const SignInModal = ({ onClose }: SignInModalProps) => {
       )}
       {phase.kind === "waiting" && (
         <>
-          <p className="text-brand-grayDark">
+          <p className="text-ink-secondary">
             Enter this code on github.com to sign in:
           </p>
           <div className="flex items-center gap-3">
             <output
               aria-label="Your sign-in code"
-              className="bg-brand-background text-brand-black grow rounded-md px-4 py-3 text-center font-mono text-3xl font-semibold tracking-widest select-all"
+              className="bg-sunken text-ink grow rounded-md px-4 py-3 text-center font-mono text-3xl font-semibold tracking-widest select-all"
             >
               {phase.userCode}
             </output>
             <button
               onClick={() => void copyCode(phase.userCode)}
-              className="text-brand-grayDark hover:bg-brand-grayLight shrink-0 rounded-md px-3 py-2 font-medium transition-colors duration-100"
+              className="text-ink-secondary hover:bg-raised shrink-0 rounded-md px-3 py-2 font-medium transition-colors duration-100"
             >
               {isCodeCopied ? "Copied" : "Copy"}
             </button>
           </div>
           <p
             aria-live="polite"
-            className="text-brand-gray flex items-center gap-2 text-sm"
+            className="text-ink-muted flex items-center gap-2 text-sm"
           >
             <span
               aria-hidden="true"
-              className="border-brand-gray inline-block size-4 animate-spin rounded-full border-2 border-t-transparent"
+              className="border-ink-muted inline-block size-4 animate-spin rounded-full border-2 border-t-transparent"
             />
             Waiting for you to finish on github.com…
           </p>
@@ -140,7 +140,7 @@ const SignInModal = ({ onClose }: SignInModalProps) => {
       )}
       {phase.kind === "expired" && (
         <>
-          <p className="text-brand-grayDark">
+          <p className="text-ink-secondary">
             That code expired before the sign-in finished. Let&rsquo;s get you a
             fresh one.
           </p>
@@ -159,7 +159,7 @@ const SignInModal = ({ onClose }: SignInModalProps) => {
       )}
       {phase.kind === "error" && (
         <>
-          <p className="text-brand-grayDark">
+          <p className="text-ink-secondary">
             Something went wrong while signing you in.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">

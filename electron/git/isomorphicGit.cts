@@ -11,6 +11,7 @@ import {
   getConfig,
   addRemote as gitAddRemote,
   fetch as gitFetch,
+  isIgnored as gitIsIgnored,
   init,
   listRemotes,
   listServerRefs,
@@ -49,6 +50,7 @@ import type {
 const TEMP_OURS_REF = "refs/nefantaris/merge-ours";
 const TEMP_THEIRS_REF = "refs/nefantaris/merge-theirs";
 const TAG_REF_PREFIX = "refs/tags/";
+const NEVER_PUBLISHED_PATHS = new Set([".dev.vars"]);
 
 class RemoteRefusedPushError extends Error {}
 
@@ -326,10 +328,15 @@ export function createIsomorphicGitLayer(
     return { kind: "connected", branch, remoteUrl };
   };
 
+  const publishableStatus = async (dir: string) =>
+    (await statusMatrix({ fs, dir })).filter(
+      ([filepath]) => !NEVER_PUBLISHED_PATHS.has(filepath),
+    );
+
   const getWorkingTreeStatus = async (
     dir: string,
   ): Promise<WorkingTreeStatus> => {
-    const matrix = await statusMatrix({ fs, dir });
+    const matrix = await publishableStatus(dir);
     const changedPaths = matrix
       .filter(
         ([, head, workdir, stage]) =>
@@ -359,7 +366,7 @@ export function createIsomorphicGitLayer(
     message: string,
     author: GitIdentity,
   ): Promise<boolean> => {
-    const matrix = await statusMatrix({ fs, dir });
+    const matrix = await publishableStatus(dir);
     let hasChanges = false;
     for (const [filepath, head, workdir, stage] of matrix) {
       if (head === 1 && workdir === 1 && stage === 1) {
@@ -632,6 +639,9 @@ export function createIsomorphicGitLayer(
     return refs.find((entry) => entry.ref === "HEAD")?.oid ?? null;
   };
 
+  const isIgnored = (dir: string, filepath: string): Promise<boolean> =>
+    gitIsIgnored({ fs, dir, filepath });
+
   const classifyFailure = (error: unknown): GitFailure => {
     if (error instanceof Errors.HttpError) {
       const statusCode = error.data.statusCode;
@@ -673,6 +683,7 @@ export function createIsomorphicGitLayer(
     listHistory,
     listRemoteTags,
     getRemoteHead,
+    isIgnored,
     classifyFailure,
   };
 }

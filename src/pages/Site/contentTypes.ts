@@ -9,3 +9,9 @@ export type EditorPaneControl = {
   flush: () => Promise<void>;
   cancelPendingSave: () => void;
 };
+
+export type RevealRequest = {
+  id: number;
+  relativePath: string;
+  line: number | null;
+};

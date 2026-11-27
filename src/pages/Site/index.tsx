@@ -2,34 +2,61 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   PointerEvent as ReactPointerEvent,
 } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type {
   ConflictChoice,
   ConflictFileView,
   ContentMutationFailure,
   ContentTree,
   GitSyncSnapshot,
+  JsonValue,
   PageTreeNode,
+  PreviewProblem,
   PreviewStatus,
+  SiteConfigEdit,
+  SiteConfigSnapshot,
   SiteInspection,
+  StyleScope,
   SyncActionOutcome,
   SyncPurpose,
 } from "../../../electron/ipcContract.cts";
 import SignInModal from "../../components/SignInModal.tsx";
 import { classNames } from "../../utils/classNames.ts";
+import { useDebouncedCallback } from "../../utils/useDebouncedCallback.ts";
+import ActivityRail from "./ActivityRail.tsx";
+import { withPluginSetting } from "./addOnsModel.ts";
+import AddOnsPane from "./AddOnsPane.tsx";
 import ConflictModal from "./ConflictModal.tsx";
-import type { ContentTarget, EditorPaneControl } from "./contentTypes.ts";
+import type {
+  ContentTarget,
+  EditorPaneControl,
+  RevealRequest,
+} from "./contentTypes.ts";
 import CreateContentModal, {
   type FolderOption,
 } from "./CreateContentModal.tsx";
+import CustomCodePane from "./CustomCodePane.tsx";
 import DeleteContentModal from "./DeleteContentModal.tsx";
+import DesignPane from "./DesignPane.tsx";
 import EditorPane from "./EditorPane.tsx";
+import type { BridgeErrorReport } from "./previewBridge.ts";
+import { createPreviewBridgeHub } from "./previewBridgeHub.ts";
 import PreviewPane from "./PreviewPane.tsx";
 import { previewTargetForFile } from "./previewRoute.ts";
 import PublishModal from "./PublishModal.tsx";
 import RenameContentModal from "./RenameContentModal.tsx";
 import Sidebar from "./Sidebar.tsx";
-import SiteStatusBar from "./SiteStatusBar.tsx";
+import {
+  loadSiteSection,
+  saveSiteSection,
+  type SiteSection,
+} from "./siteSections.ts";
+import { applyConfigEdits, linkOptionsFrom } from "./siteSettingsModel.ts";
+import SiteSettingsPane from "./SiteSettingsPane.tsx";
+import SiteStatusBar, { type SaveState } from "./SiteStatusBar.tsx";
+import { breakpointPlanFor } from "./styleBreakpoints.ts";
+import StylePane from "./StylePane.tsx";
+import type { StyleSelection } from "./styleTargets.ts";
 import UpdateBanner from "./UpdateBanner.tsx";
 import VersionsModal from "./VersionsModal.tsx";
 
@@ -120,11 +147,39 @@ function describeSyncFailure(
   }
 }
 
+function problemFromBridge(
+  report: BridgeErrorReport | null,
+): PreviewProblem | null {
+  return report === null
+    ? null
+    : { file: report.file, line: report.line, detail: report.message };
+}
+
 const MIN_SPLIT_PANE_PX = 280;
+const REINSPECT_DELAY_MS = 400;
+
+async function settledQuietly(promise: Promise<void>): Promise<void> {
+  try {
+    await promise;
+  } catch {
+    return;
+  }
+}
 
 const Site = ({ siteName, sitePath }: SiteProps) => {
   const editorControlRef = useRef<EditorPaneControl | null>(null);
+  const codeControlRef = useRef<EditorPaneControl | null>(null);
+  const cssDraftRef = useRef<string | null>(null);
   const splitRef = useRef<HTMLDivElement>(null);
+  const configQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const pendingConfigOperationsRef = useRef(0);
+  const pendingConfigWritesRef = useRef(0);
+  const inspectGenerationRef = useRef(0);
+  const [previewHub] = useState(createPreviewBridgeHub);
+  const bridgeState = useSyncExternalStore(
+    previewHub.subscribeState,
+    previewHub.getState,
+  );
   const [tree, setTree] = useState<ContentTree | null>(null);
   const [inspection, setInspection] = useState<SiteInspection | null>(null);
   const [openFile, setOpenFile] = useState<OpenFile | null>(null);
@@ -138,6 +193,9 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
     state: "stopped",
   });
   const [previewRoute, setPreviewRoute] = useState("/");
+  const [revealRequest, setRevealRequest] = useState<RevealRequest | null>(
+    null,
+  );
   const [previewRatio, setPreviewRatio] = useState(0.5);
   const [syncSnapshot, setSyncSnapshot] = useState<GitSyncSnapshot | null>(
     null,
@@ -154,6 +212,19 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [isSignInOffered, setIsSignInOffered] = useState(false);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const [siteConfig, setSiteConfig] = useState<SiteConfigSnapshot | null>(null);
+  const [section, setSection] = useState<SiteSection>(() =>
+    loadSiteSection(sitePath),
+  );
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const [isCodeDirty, setIsCodeDirty] = useState(false);
+  const [hasCssDraft, setHasCssDraft] = useState(false);
+  const [styleScope, setStyleScope] = useState<StyleScope>("all");
+  const [styleSelection, setStyleSelection] = useState<StyleSelection | null>(
+    null,
+  );
+  const [isStylePanelCollapsed, setIsStylePanelCollapsed] = useState(false);
+  const [isStyleSaving, setIsStyleSaving] = useState(false);
 
   const folderOptions: FolderOption[] = [
     { value: "", label: "Top level" },
@@ -164,6 +235,39 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
     ? previewTargetForFile(openFile.relativePath, openFile.diskText).kind ===
       "draft"
     : false;
+
+  const configuredName =
+    siteConfig?.status === "ok" ? siteConfig.config.name : undefined;
+  const displayName =
+    typeof configuredName === "string" && configuredName.trim() !== ""
+      ? configuredName
+      : siteName;
+
+  const fileSaveState: SaveState | null =
+    openFile === null ? null : isDirty ? "saving" : "saved";
+  const isContentSection = section === "content";
+  const isStyleSection = section === "style";
+  const isSectionSaving =
+    section === "customCode"
+      ? isCodeDirty
+      : isStyleSection
+        ? isStyleSaving
+        : isSavingSettings;
+  const sectionSaveState: SaveState = isSectionSaving ? "saving" : "saved";
+  const isCssDraftShown = section === "customCode" && hasCssDraft;
+  const saveState: SaveState | null = isContentSection
+    ? fileSaveState
+    : isCssDraftShown
+      ? "notSaved"
+      : sectionSaveState;
+  const statusProblem =
+    previewStatus.state === "ready" ? previewStatus.problem : null;
+  const previewProblem = bridgeState.isConnected
+    ? problemFromBridge(bridgeState.error)
+    : statusProblem;
+  const stylePlan = breakpointPlanFor(inspection?.breakpoints ?? null);
+  const previewFrame = isStyleSection ? stylePlan.frames[styleScope] : null;
+  const isPreviewBesidePane = isPreviewOpen && !isStyleSection;
 
   const isUpdateBannerVisible =
     syncSnapshot !== null &&
@@ -178,6 +282,142 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
     saveFrontmatterFormOpen(isOpen);
   };
 
+  const runConfigOperation = (
+    operation: () => Promise<SiteConfigSnapshot>,
+    isWrite: boolean,
+  ): Promise<void> => {
+    pendingConfigOperationsRef.current += 1;
+    if (isWrite) {
+      pendingConfigWritesRef.current += 1;
+      setIsSavingSettings(true);
+    }
+    const settle = async () => {
+      try {
+        const snapshot = await operation();
+        if (pendingConfigOperationsRef.current === 1) {
+          setSiteConfig(snapshot);
+        }
+      } finally {
+        pendingConfigOperationsRef.current -= 1;
+        if (isWrite) {
+          pendingConfigWritesRef.current -= 1;
+          setIsSavingSettings(pendingConfigWritesRef.current > 0);
+        }
+      }
+    };
+    const previous = configQueueRef.current;
+    const settled = (async () => {
+      await previous;
+      await settle();
+    })();
+    configQueueRef.current = settledQuietly(settled);
+    return settled;
+  };
+
+  const editSiteConfig = (edits: SiteConfigEdit[]) => {
+    if (edits.length === 0) {
+      return;
+    }
+    setSiteConfig((current) =>
+      current?.status === "ok"
+        ? { status: "ok", config: applyConfigEdits(current.config, edits) }
+        : current,
+    );
+    void runConfigOperation(
+      () => globalThis.nefantaris.invoke("siteConfig:edit", sitePath, edits),
+      true,
+    );
+  };
+
+  const refreshSiteConfig = () =>
+    runConfigOperation(
+      () => globalThis.nefantaris.invoke("siteConfig:read", sitePath),
+      false,
+    );
+
+  const showSection = (next: SiteSection) => {
+    setSection(next);
+    saveSiteSection(sitePath, next);
+  };
+
+  const flushEditors = async () => {
+    await editorControlRef.current?.flush();
+    await codeControlRef.current?.flush();
+  };
+
+  const selectSection = async (next: SiteSection) => {
+    await flushEditors();
+    showSection(next);
+    if (next === "style" && !isPreviewOpen) {
+      openPreview();
+    }
+  };
+
+  const refreshInspection = async () => {
+    inspectGenerationRef.current += 1;
+    const generation = inspectGenerationRef.current;
+    const inspected = await globalThis.nefantaris.invoke(
+      "site:inspect",
+      sitePath,
+    );
+    if (generation === inspectGenerationRef.current) {
+      setInspection(inspected);
+    }
+  };
+
+  const changePluginSetting = async (
+    name: string,
+    setting: string,
+    value: JsonValue | undefined,
+  ): Promise<string | null> => {
+    const storedValue = value === null ? undefined : value;
+    setSiteConfig((current) =>
+      current?.status === "ok"
+        ? {
+            status: "ok",
+            config: withPluginSetting(
+              current.config,
+              name,
+              setting,
+              storedValue,
+            ),
+          }
+        : current,
+    );
+    let failure: string | null = null;
+    await runConfigOperation(async () => {
+      const result =
+        storedValue === undefined
+          ? await globalThis.nefantaris.invoke(
+              "plugins:unsetSetting",
+              sitePath,
+              name,
+              setting,
+            )
+          : await globalThis.nefantaris.invoke(
+              "plugins:setSetting",
+              sitePath,
+              name,
+              setting,
+              storedValue,
+            );
+      failure = result.status === "failed" ? result.message : null;
+      return result.snapshot;
+    }, true);
+    debouncedReinspect.schedule();
+    return failure;
+  };
+
+  const refreshAfterPluginChange = async () => {
+    void refreshInspection();
+    await refreshSiteConfig();
+  };
+
+  const debouncedReinspect = useDebouncedCallback(
+    () => void refreshInspection(),
+    REINSPECT_DELAY_MS,
+  );
+
   const refreshTree = async () => {
     setTree(await globalThis.nefantaris.invoke("content:getTree", sitePath));
   };
@@ -190,6 +430,7 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
   };
 
   const openContentFile = async (relativePath: string) => {
+    showSection("content");
     if (openFile?.relativePath === relativePath) {
       return;
     }
@@ -206,10 +447,27 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
     }
   };
 
+  const openSourceFromPreview = async (
+    relativePath: string,
+    line: number | null,
+  ) => {
+    await openContentFile(relativePath);
+    setRevealRequest((current) => ({
+      id: (current?.id ?? 0) + 1,
+      relativePath,
+      line,
+    }));
+  };
+
   const startPreview = async () => {
     setPreviewStatus(
       await globalThis.nefantaris.invoke("preview:start", sitePath),
     );
+  };
+
+  const openPreview = () => {
+    setIsPreviewOpen(true);
+    void startPreview();
   };
 
   const togglePreview = () => {
@@ -217,8 +475,7 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
       setIsPreviewOpen(false);
       return;
     }
-    setIsPreviewOpen(true);
-    void startPreview();
+    openPreview();
   };
 
   const clampPreviewRatio = (ratio: number): number => {
@@ -339,7 +596,7 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
   };
 
   const submitPublish = async (note: string): Promise<string | null> => {
-    await editorControlRef.current?.flush();
+    await flushEditors();
     const trimmedNote = note.trim();
     const outcome = await globalThis.nefantaris.invoke(
       "publish:run",
@@ -363,7 +620,7 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
 
   const startUpdateFromOnline = async () => {
     setUpdateError(null);
-    await editorControlRef.current?.flush();
+    await flushEditors();
     const outcome = await globalThis.nefantaris.invoke("sync:update", sitePath);
     if (outcome.status === "conflicts") {
       setConflictState({ purpose: outcome.purpose, files: outcome.files });
@@ -401,19 +658,21 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
   };
 
   useEffect(() => {
-    document.title = siteName;
-  }, [siteName]);
+    document.title = displayName;
+  }, [displayName]);
 
   useEffect(() => {
     const loadInitialData = async () => {
       setTree(await globalThis.nefantaris.invoke("content:getTree", sitePath));
+      await refreshSiteConfig();
       setPreviewStatus(
         await globalThis.nefantaris.invoke("preview:getStatus", sitePath),
       );
       setSyncSnapshot(await globalThis.nefantaris.invoke("sync:get", sitePath));
-      setInspection(
-        await globalThis.nefantaris.invoke("site:inspect", sitePath),
-      );
+      if (section === "style") {
+        openPreview();
+      }
+      await refreshInspection();
     };
     void loadInitialData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -428,6 +687,33 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
   }, [sitePath]);
 
   useEffect(() => {
+    const stopConfigWatch = globalThis.nefantaris.on(
+      "siteConfig:changed",
+      (payload) => {
+        if (payload.sitePath !== sitePath) {
+          return;
+        }
+        void globalThis.nefantaris.invoke("sync:get", sitePath);
+        void refreshSiteConfig();
+        debouncedReinspect.schedule();
+      },
+    );
+    const stopFilesWatch = globalThis.nefantaris.on(
+      "siteFiles:changed",
+      (payload) => {
+        if (payload.sitePath === sitePath) {
+          void globalThis.nefantaris.invoke("sync:get", sitePath);
+        }
+      },
+    );
+    return () => {
+      stopConfigWatch();
+      stopFilesWatch();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sitePath]);
+
+  useEffect(() => {
     return globalThis.nefantaris.on("sync:changed", (payload) => {
       if (payload.sitePath === sitePath) {
         setSyncSnapshot(payload.snapshot);
@@ -439,6 +725,19 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
     return globalThis.nefantaris.on("auth:statusChanged", () =>
       setIsSignInOffered(false),
     );
+  }, []);
+
+  useEffect(() => {
+    const warnAboutUnfinishedCss = (event: BeforeUnloadEvent) => {
+      void codeControlRef.current?.flush();
+      if (cssDraftRef.current !== null) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    };
+    globalThis.addEventListener("beforeunload", warnAboutUnfinishedCss);
+    return () =>
+      globalThis.removeEventListener("beforeunload", warnAboutUnfinishedCss);
   }, []);
 
   useEffect(() => {
@@ -499,10 +798,10 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
   }, [sitePath, openFile, isDirty]);
 
   return (
-    <div className="bg-brand-white flex h-screen flex-col">
+    <div className="bg-surface flex h-screen flex-col">
       <a
         href="#editor"
-        className="bg-brand-primary text-brand-white sr-only z-50 rounded-md px-4 py-2 focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+        className="bg-primary text-on-primary sr-only z-50 rounded-md px-4 py-2 focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
       >
         Skip to editor
       </a>
@@ -515,9 +814,14 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
         />
       )}
       <div className="flex min-h-0 grow">
+        <ActivityRail
+          activeSection={section}
+          onSectionSelected={(next) => void selectSection(next)}
+        />
         <Sidebar
           tree={tree}
           selectedPath={openFile?.relativePath ?? null}
+          isHidden={!isContentSection}
           onFileSelected={(relativePath) => void openContentFile(relativePath)}
           onCreateRequested={(contentKind) =>
             setModal({ type: "create", contentKind })
@@ -529,51 +833,132 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
           <main
             id="editor"
             className={classNames(
-              "bg-brand-white min-w-0",
+              "bg-surface min-w-0",
               isPreviewOpen ? "shrink-0" : "grow",
+              isPreviewOpen &&
+                isStyleSection &&
+                (isStylePanelCollapsed ? "w-12" : "w-80"),
             )}
             style={
-              isPreviewOpen
+              isPreviewBesidePane
                 ? { width: `${(1 - previewRatio) * 100}%` }
                 : undefined
             }
           >
-            {openFile ? (
-              <EditorPane
-                key={openFile.relativePath}
+            {section === "settings" && (
+              <SiteSettingsPane
                 sitePath={sitePath}
-                relativePath={openFile.relativePath}
-                diskText={openFile.diskText}
+                snapshot={siteConfig}
+                tree={tree}
                 inspection={inspection}
-                isFrontmatterFormOpen={isFrontmatterFormOpen}
-                onFrontmatterFormOpenChanged={changeFrontmatterFormOpen}
-                controlRef={editorControlRef}
-                onDirtyChanged={setIsDirty}
+                onEdit={editSiteConfig}
+                onCloseRequested={() => showSection("content")}
               />
-            ) : (
-              <div className="flex h-full items-center justify-center p-4">
-                <p className="text-brand-gray">
-                  Select a page or post to start writing.
-                </p>
-              </div>
             )}
+            {section === "design" && (
+              <DesignPane
+                sitePath={sitePath}
+                snapshot={siteConfig}
+                inspection={inspection}
+                onEdit={editSiteConfig}
+                onRecheckRequested={() => void refreshInspection()}
+                onCloseRequested={() => showSection("content")}
+              />
+            )}
+            {isStyleSection && (
+              <StylePane
+                sitePath={sitePath}
+                inspection={inspection}
+                hub={previewHub}
+                plan={stylePlan}
+                scope={styleScope}
+                selection={styleSelection}
+                isPreviewOpen={isPreviewOpen}
+                isCollapsed={isStylePanelCollapsed && isPreviewOpen}
+                hasCssDraft={hasCssDraft}
+                cssDraftRef={cssDraftRef}
+                previewProblem={previewProblem}
+                onScopeChanged={setStyleScope}
+                onSelectionChanged={setStyleSelection}
+                onCollapsedChanged={setIsStylePanelCollapsed}
+                onPreviewRequested={openPreview}
+                onCssRequested={() => void selectSection("customCode")}
+                onSavingChanged={setIsStyleSaving}
+              />
+            )}
+            {section === "customCode" && (
+              <CustomCodePane
+                sitePath={sitePath}
+                inspection={inspection}
+                previewProblem={previewProblem}
+                controlRef={codeControlRef}
+                cssDraftRef={cssDraftRef}
+                onDirtyChanged={setIsCodeDirty}
+                onCssDraftHeld={setHasCssDraft}
+                onCloseRequested={() => void selectSection("content")}
+              />
+            )}
+            {section === "addOns" && (
+              <AddOnsPane
+                sitePath={sitePath}
+                snapshot={siteConfig}
+                inspection={inspection}
+                onPluginsChanged={refreshAfterPluginChange}
+                onPluginSettingChanged={changePluginSetting}
+                onCloseRequested={() => showSection("content")}
+              />
+            )}
+            <div
+              className={classNames("h-full", !isContentSection && "hidden")}
+            >
+              {openFile ? (
+                <EditorPane
+                  key={openFile.relativePath}
+                  sitePath={sitePath}
+                  relativePath={openFile.relativePath}
+                  diskText={openFile.diskText}
+                  inspection={inspection}
+                  linkOptions={linkOptionsFrom(tree)}
+                  isFrontmatterFormOpen={isFrontmatterFormOpen}
+                  onFrontmatterFormOpenChanged={changeFrontmatterFormOpen}
+                  controlRef={editorControlRef}
+                  revealRequest={revealRequest}
+                  onDirtyChanged={setIsDirty}
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center p-4">
+                  <p className="text-ink-muted">
+                    Select a page or post to start writing.
+                  </p>
+                </div>
+              )}
+            </div>
           </main>
           {isPreviewOpen && (
             <>
-              <button
-                aria-label="Resize preview"
-                onPointerDown={(event) =>
-                  event.currentTarget.setPointerCapture(event.pointerId)
-                }
-                onPointerMove={resizeSplitFromPointer}
-                onKeyDown={resizeSplitFromKeyboard}
-                className="bg-brand-border hover:bg-brand-primary w-1 shrink-0 cursor-col-resize rounded-none transition-colors duration-100"
-              />
+              {!isStyleSection && (
+                <button
+                  aria-label="Resize preview"
+                  onPointerDown={(event) =>
+                    event.currentTarget.setPointerCapture(event.pointerId)
+                  }
+                  onPointerMove={resizeSplitFromPointer}
+                  onKeyDown={resizeSplitFromKeyboard}
+                  className="bg-line hover:bg-primary w-1 shrink-0 cursor-col-resize rounded-none transition-colors duration-100"
+                />
+              )}
               <div className="min-w-0 grow">
                 <PreviewPane
                   status={previewStatus}
                   route={previewRoute}
+                  openFilePath={openFile?.relativePath ?? null}
                   isDraftNoteVisible={isDraftFileOpen}
+                  hub={previewHub}
+                  isStylePicking={isStyleSection}
+                  frame={previewFrame}
+                  onSourceRequested={(relativePath, line) =>
+                    void openSourceFromPreview(relativePath, line)
+                  }
                   onCloseRequested={() => setIsPreviewOpen(false)}
                   onRetryRequested={() => void startPreview()}
                 />
@@ -583,9 +968,8 @@ const Site = ({ siteName, sitePath }: SiteProps) => {
         </div>
       </div>
       <SiteStatusBar
-        siteName={siteName}
-        isFileOpen={openFile !== null}
-        isDirty={isDirty}
+        siteName={displayName}
+        saveState={saveState}
         syncSnapshot={syncSnapshot}
         isPreviewOpen={isPreviewOpen}
         isSignInOffered={isSignInOffered}

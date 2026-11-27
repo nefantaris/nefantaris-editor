@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { runCoreCommand } from "./coreRunner.cjs";
+import { coreErrorDetail, runCoreCommand } from "./coreRunner.cjs";
 import { gitLayer } from "./git/gitLayerInstance.cjs";
 import { resolveIdentity } from "./git/siteSync.cjs";
 import type {
@@ -26,6 +26,7 @@ const THEME_LINK_MESSAGE =
 function folderNameFor(siteName: string): string {
   return siteName
     .normalize("NFKD")
+    .replaceAll(/\p{M}/gu, "")
     .toLowerCase()
     .replaceAll(/[^a-z0-9]+/g, "-")
     .replaceAll(/^-+|-+$/g, "");
@@ -65,10 +66,7 @@ function unreachableMessage(isOffline: boolean, notFound: string): string {
 }
 
 function initFailureMessage(stderr: string): string {
-  const detail = stderr
-    .split("\n")
-    .map((line) => line.trim())
-    .findLast((line) => line !== "");
+  const detail = coreErrorDetail(stderr);
   if (detail === undefined) {
     return "Something went wrong while creating your site. Nothing was left behind — you can try again.";
   }

@@ -9,6 +9,7 @@ import type {
   RenameContentResult,
   SaveAssetResult,
 } from "./ipcContract.cjs";
+import { resolveInside } from "./pathConfinement.cjs";
 
 const ASSET_EXTENSIONS_BY_MIME: Record<string, string> = {
   "image/png": "png",
@@ -18,19 +19,6 @@ const ASSET_EXTENSIONS_BY_MIME: Record<string, string> = {
   "image/svg+xml": "svg",
   "image/avif": "avif",
 };
-
-function resolveInside(
-  sitePath: string,
-  relativePath: string,
-  allowedRoot: string,
-): string {
-  const absolute = path.resolve(sitePath, relativePath);
-  const root = path.resolve(sitePath, allowedRoot);
-  if (absolute !== root && !absolute.startsWith(root + path.sep)) {
-    throw new Error(`Path escapes ${allowedRoot}: ${relativePath}`);
-  }
-  return absolute;
-}
 
 export function kebabCase(input: string): string {
   return input

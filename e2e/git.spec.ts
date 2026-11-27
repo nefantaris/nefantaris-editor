@@ -10,6 +10,7 @@ import {
   closeGitServers,
   createGitSite,
   pushFromSeed,
+  runGit,
   siteFileContent,
   workingTreeStatus,
   type GitSiteFixture,
@@ -100,6 +101,35 @@ test("publishing commits everything and lands in the online copy with the note",
     aboutLocal,
   );
   expect((await workingTreeStatus(fixture.sitePath)).trim()).toBe("");
+});
+
+test("publishing never includes the preview's .dev.vars, even when .gitignore doesn't list it", async () => {
+  const secrets = "SLACK_WEBHOOK=https://hooks.example.com/secret\n";
+  const fixture = await createGitSite("Secrets Site", baseFiles);
+  await editLocalFile(fixture, ".dev.vars", secrets);
+  const { window } = await openGitSite(fixture.sitePath);
+
+  await expect(syncStatus(window)).toHaveText("Up to date");
+  await expect(statusBarPublishButton(window)).toBeDisabled();
+
+  await editLocalFile(fixture, "content/pages/about.md", aboutLocal);
+  await expect(statusBarPublishButton(window)).toBeEnabled();
+  await publishThroughDialog(window, null);
+  await expect(window.getByRole("dialog")).toHaveCount(0);
+  await expect(syncStatus(window)).toHaveText("Up to date");
+
+  expect(await bareFileContent(fixture, "content/pages/about.md")).toBe(
+    aboutLocal,
+  );
+  const published = await runGit(fixture.barePath, [
+    "ls-tree",
+    "-r",
+    "--name-only",
+    "main",
+  ]);
+  expect(published.split("\n")).not.toContain(".dev.vars");
+  expect(published).not.toContain("hooks.example.com");
+  expect(await siteFileContent(fixture.sitePath, ".dev.vars")).toBe(secrets);
 });
 
 test("with nothing to publish the button is disabled and says everything is live", async () => {

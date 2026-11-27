@@ -20,7 +20,7 @@ const PublishModal = ({ onSubmit, onClose }: PublishModalProps) => {
 
   return (
     <ModalDialog title="Publish your site" onClose={onClose}>
-      <p className="text-brand-grayDark text-sm">
+      <p className="text-ink-secondary text-sm">
         Your latest edits will go live on the internet.
       </p>
       <form
@@ -28,7 +28,7 @@ const PublishModal = ({ onSubmit, onClose }: PublishModalProps) => {
         className="flex flex-col gap-4"
       >
         <label className="flex flex-col gap-1">
-          <span className="text-brand-grayDark text-sm font-medium">
+          <span className="text-ink-secondary text-sm font-medium">
             What changed? (optional)
           </span>
           <input
@@ -36,11 +36,11 @@ const PublishModal = ({ onSubmit, onClose }: PublishModalProps) => {
             value={note}
             onChange={(event) => setNote(event.target.value)}
             placeholder="A short note for this version"
-            className="bg-brand-background text-brand-black placeholder:text-brand-gray focus:ring-brand-primary rounded-md p-3 focus:ring-2 focus:outline-none"
+            className="bg-field text-ink placeholder:text-ink-muted focus:ring-primary rounded-md p-3 focus:ring-2 focus:outline-none"
           />
         </label>
         {error && (
-          <p role="alert" className="text-brand-danger text-sm">
+          <p role="alert" className="text-danger text-sm">
             {error}
           </p>
         )}
@@ -48,14 +48,14 @@ const PublishModal = ({ onSubmit, onClose }: PublishModalProps) => {
           <button
             type="submit"
             disabled={isPublishing}
-            className="bg-brand-primary text-brand-white hover:bg-brand-primaryHover disabled:bg-brand-disabled grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:order-2 sm:w-0"
+            className="bg-primary text-on-primary hover:bg-primary-hover disabled:bg-raised disabled:text-ink-disabled grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:order-2 sm:w-0"
           >
             {isPublishing ? "Publishing…" : "Publish"}
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="bg-brand-grayLight text-brand-grayDark hover:bg-brand-border grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:w-0"
+            className="bg-raised text-ink-secondary hover:bg-raised-strong grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:w-0"
           >
             Cancel
           </button>

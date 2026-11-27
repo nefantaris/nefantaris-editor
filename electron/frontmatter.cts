@@ -49,3 +49,12 @@ export function frontmatterDate(frontmatter: Frontmatter): string | null {
 export function frontmatterDraft(frontmatter: Frontmatter): boolean {
   return frontmatter.draft === true;
 }
+
+export function frontmatterSlug(frontmatter: Frontmatter): string | null {
+  const slug = frontmatter.slug;
+  if (typeof slug !== "string") {
+    return null;
+  }
+  const trimmed = slug.replaceAll(/^\/+|\/+$/g, "");
+  return trimmed === "" ? null : trimmed;
+}

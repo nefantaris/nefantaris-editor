@@ -17,14 +17,14 @@ const RowActions = ({
       <button
         aria-label={`Rename ${target.title}`}
         onClick={() => onRenameRequested(target)}
-        className="text-brand-gray hover:text-brand-black hover:bg-brand-grayLight rounded-md p-1 transition-colors duration-100"
+        className="text-ink-muted hover:text-ink hover:bg-raised-strong rounded-md p-1 transition-colors duration-100"
       >
         <PencilIcon />
       </button>
       <button
         aria-label={`Delete ${target.title}`}
         onClick={() => onDeleteRequested(target)}
-        className="text-brand-gray hover:text-brand-danger hover:bg-brand-grayLight rounded-md p-1 transition-colors duration-100"
+        className="text-ink-muted hover:text-danger hover:bg-raised-strong rounded-md p-1 transition-colors duration-100"
       >
         <TrashIcon />
       </button>

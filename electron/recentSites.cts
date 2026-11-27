@@ -55,6 +55,21 @@ export function recordRecentSite(site: RecentSite): RecentSite[] {
   return sites;
 }
 
+export function renameRecentSite(
+  sitePath: string,
+  name: string,
+): RecentSite[] | null {
+  const sites = loadRecentSites();
+  if (sites.every((known) => known.path !== sitePath || known.name === name)) {
+    return null;
+  }
+  const renamed = sites.map((known) =>
+    known.path === sitePath ? { ...known, name } : known,
+  );
+  saveRecentSites(renamed);
+  return renamed;
+}
+
 export function removeRecentSite(sitePath: string): RecentSite[] {
   const sites = loadRecentSites().filter((known) => known.path !== sitePath);
   saveRecentSites(sites);

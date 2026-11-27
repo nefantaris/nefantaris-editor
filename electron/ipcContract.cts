@@ -20,6 +20,7 @@ export type PageTreeFile = {
   title: string;
   fileName: string;
   relativePath: string;
+  route: string | null;
 };
 
 export type PageTreeFolder = {
@@ -35,6 +36,7 @@ export type PostListEntry = {
   title: string;
   fileName: string;
   relativePath: string;
+  route: string | null;
   date: string | null;
   isDraft: boolean;
 };
@@ -77,19 +79,339 @@ export type SiteConfig = {
   plugins: string[];
 };
 
+export type SiteMode = "light" | "dark";
+
+export type ChoiceOption = {
+  value: string;
+  label: string;
+};
+
+export type ThemeSettingOption = ChoiceOption & {
+  css: string | null;
+};
+
+export type ThemeColorPair = {
+  light: string;
+  dark: string;
+};
+
+type ThemeSettingCommon = {
+  label: string;
+  description: string | null;
+  group: string | null;
+};
+
+export type ThemeColorSetting = ThemeSettingCommon & {
+  type: "color";
+  css: string | null;
+  default: ThemeColorPair;
+};
+
+export type ThemeSelectSetting = ThemeSettingCommon & {
+  type: "select";
+  css: string | null;
+  options: ThemeSettingOption[];
+  default: string;
+};
+
+export type ThemeBooleanSetting = ThemeSettingCommon & {
+  type: "boolean";
+  default: boolean;
+};
+
+export type ThemeTextSetting = ThemeSettingCommon & {
+  type: "text";
+  multiline: boolean;
+  default: string;
+};
+
+export type ThemeImageSetting = ThemeSettingCommon & {
+  type: "image";
+  default: string | null;
+};
+
+export type ThemeSettingDefinition =
+  | ThemeColorSetting
+  | ThemeSelectSetting
+  | ThemeBooleanSetting
+  | ThemeTextSetting
+  | ThemeImageSetting;
+
+export type ThemeSettingValue = ThemeColorPair | string | boolean | null;
+
+type BlockAttributeCommon = {
+  label: string;
+  description: string | null;
+  required: boolean;
+};
+
+export type BlockTextAttribute = BlockAttributeCommon & {
+  type: "text";
+  multiline: boolean;
+  default: string | null;
+  example: string | null;
+};
+
+export type BlockSelectAttribute = BlockAttributeCommon & {
+  type: "select";
+  options: ChoiceOption[];
+  default: string | null;
+};
+
+export type BlockBooleanAttribute = BlockAttributeCommon & {
+  type: "boolean";
+  default: boolean | null;
+};
+
+export type BlockImageAttribute = BlockAttributeCommon & {
+  type: "image";
+  alt: string | null;
+  default: string | null;
+  example: string | null;
+};
+
+export type BlockUrlAttribute = BlockAttributeCommon & {
+  type: "url";
+  default: string | null;
+  example: string | null;
+};
+
+export type BlockAttribute =
+  | BlockTextAttribute
+  | BlockSelectAttribute
+  | BlockBooleanAttribute
+  | BlockImageAttribute
+  | BlockUrlAttribute;
+
+export type BlockBody = "markdown" | "images" | "none";
+
+export type BlockText = {
+  label: string;
+  description: string | null;
+  required: boolean;
+};
+
+export type BlockSchema = {
+  label: string;
+  description: string | null;
+  body: BlockBody;
+  placeholder: string | null;
+  text: BlockText | null;
+  attributes: Record<string, BlockAttribute>;
+  plugin: string | null;
+};
+
+export type ThemePart = {
+  label: string;
+  description: string | null;
+};
+
+export type ThemeBreakpoint = {
+  name: string;
+  minWidth: number;
+};
+
+export type InspectedTheme = {
+  name: string;
+  source: string | null;
+  version: string | null;
+  dir: string;
+  files: string[];
+  overrides: string[];
+};
+
+export type PluginHeadTag = {
+  tag: string;
+  attributes: Record<string, string | boolean>;
+  when: string | null;
+  active: boolean;
+};
+
+export type PluginDetail = {
+  name: string;
+  source: string | null;
+  version: string | null;
+  requiredByTheme: boolean;
+  error: string | null;
+  blocks: string[];
+  settings: Record<string, ThemeSettingDefinition>;
+  settingValues: Record<string, ThemeSettingValue>;
+  head: PluginHeadTag[];
+  functions: string[];
+};
+
 export type SiteInspection = {
   contract: number;
   site: SiteConfig;
   templates: string[];
   directives: string[];
+  directiveSchemas: Record<string, BlockSchema> | null;
   plugins: string[];
+  pluginDetails: PluginDetail[] | null;
+  themeModes: SiteMode[] | null;
+  settings: Record<string, ThemeSettingDefinition> | null;
+  settingValues: Record<string, ThemeSettingValue>;
+  parts: Record<string, ThemePart> | null;
+  breakpoints: ThemeBreakpoint[] | null;
+  theme: InspectedTheme | null;
+  isFallback: boolean;
+};
+
+export type JsonValue =
+  null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
+
+export type JsonObject = { [key: string]: JsonValue };
+
+export type SiteConfigPath = (string | number)[];
+
+export type SiteConfigEdit =
+  | { kind: "set"; path: SiteConfigPath; value: JsonValue }
+  | { kind: "insert"; path: SiteConfigPath; value: JsonValue }
+  | { kind: "remove"; path: SiteConfigPath }
+  | { kind: "move"; path: SiteConfigPath; from: number; to: number };
+
+export type SiteConfigSnapshot =
+  | { status: "ok"; config: JsonObject }
+  | { status: "missing" }
+  | { status: "unreadable" };
+
+export type SiteImage = {
+  assetPath: string;
+  fileName: string;
+};
+
+export type SiteFavicon = {
+  fileName: string;
+  modifiedAtMs: number;
+};
+
+export type SetFaviconResult =
+  | { status: "saved"; favicon: SiteFavicon }
+  | { status: "failed"; reason: "unsupported-type" };
+
+export type AddPluginResult =
+  | { status: "added"; snapshot: SiteConfigSnapshot }
+  | { status: "failed"; message: string };
+
+export type RemovePluginResult =
+  | { status: "removed"; snapshot: SiteConfigSnapshot }
+  | { status: "failed"; message: string };
+
+export type PluginSettingResult =
+  | { status: "saved"; snapshot: SiteConfigSnapshot }
+  | { status: "failed"; message: string; snapshot: SiteConfigSnapshot };
+
+export type DevVariable = {
+  name: string;
+  value: string;
+};
+
+export type DevVarsState = {
+  variables: DevVariable[];
+  isIgnored: boolean;
+};
+
+export type PreviewProblem = {
+  file: string | null;
+  line: number | null;
+  detail: string;
 };
 
 export type PreviewStatus =
   | { state: "stopped" }
   | { state: "starting" }
-  | { state: "ready"; url: string }
+  | { state: "ready"; url: string; problem: PreviewProblem | null }
   | { state: "error"; message: string; logTail: string };
+
+export type StyleFinding = {
+  rule: string;
+  message: string;
+  line: number | null;
+};
+
+export type ThemeStyleToken = {
+  name: string;
+  value: string;
+};
+
+export type StyleScope = "all" | "tablet" | "phone";
+
+export type StyleMediaWidths = {
+  tablet: number;
+  phone: number;
+};
+
+export type StyleDeclaration = {
+  property: string;
+  value: string;
+  isImportant: boolean;
+};
+
+export type StyledRule = {
+  selector: string;
+  key: string;
+  scope: StyleScope;
+  line: number;
+  declarations: StyleDeclaration[];
+};
+
+export type StyleRulesState =
+  | { status: "ok"; rules: StyledRule[] }
+  | { status: "unparseable"; line: number | null };
+
+export type StyleValue = {
+  property: string;
+  value: string;
+};
+
+export type StyleEdit = {
+  selector: string;
+  scope: StyleScope;
+  set: StyleValue[];
+  remove: string[];
+};
+
+export type StyleEditResult =
+  | { status: "saved"; rules: StyledRule[] }
+  | { status: "unparseable"; line: number | null }
+  | { status: "rejected" };
+
+export type ComponentOverrideState = "current" | "theme-changed" | "untracked";
+
+export type ComponentOverride = {
+  path: string;
+  state: ComponentOverrideState;
+};
+
+export type ComponentListing =
+  | {
+      status: "ok";
+      themeName: string;
+      themeVersion: string | null;
+      files: string[];
+      overrides: ComponentOverride[];
+    }
+  | { status: "unavailable" };
+
+export type CustomizeComponentResult =
+  | { status: "customized" }
+  | {
+      status: "failed";
+      reason: "theme-unavailable" | "not-a-theme-file" | "already-customized";
+    };
+
+export type SaveComponentResult = { status: "saved" } | { status: "missing" };
+
+export type ComponentComparison =
+  | {
+      status: "ok";
+      theme: string | null;
+      mine: string;
+      original: string | null;
+      customizedFromVersion: string | null;
+      themeVersion: string | null;
+    }
+  | { status: "missing" };
 
 export type GitSyncSnapshot = {
   connection: "not-connected" | "offline" | "connected";
@@ -258,9 +580,130 @@ export type IpcInvokeMap = {
     args: [sitePath: string];
     result: SiteInspection;
   };
+  "siteConfig:read": {
+    args: [sitePath: string];
+    result: SiteConfigSnapshot;
+  };
+  "siteConfig:edit": {
+    args: [sitePath: string, edits: SiteConfigEdit[]];
+    result: SiteConfigSnapshot;
+  };
+  "siteFiles:listImages": {
+    args: [sitePath: string];
+    result: SiteImage[];
+  };
+  "siteFiles:getFavicon": {
+    args: [sitePath: string];
+    result: SiteFavicon | null;
+  };
+  "siteFiles:setFavicon": {
+    args: [
+      sitePath: string,
+      fileName: string,
+      mimeType: string,
+      bytes: Uint8Array,
+    ];
+    result: SetFaviconResult;
+  };
+  "customCss:read": {
+    args: [sitePath: string];
+    result: string;
+  };
+  "customCss:write": {
+    args: [sitePath: string, text: string];
+    result: null;
+  };
+  "customCss:findings": {
+    args: [sitePath: string];
+    result: StyleFinding[];
+  };
+  "customCss:themeTokens": {
+    args: [sitePath: string];
+    result: ThemeStyleToken[];
+  };
+  "styleRules:read": {
+    args: [sitePath: string, widths: StyleMediaWidths];
+    result: StyleRulesState;
+  };
+  "styleRules:edit": {
+    args: [sitePath: string, widths: StyleMediaWidths, edit: StyleEdit];
+    result: StyleEditResult;
+  };
+  "styleRules:resetTarget": {
+    args: [sitePath: string, widths: StyleMediaWidths, selector: string];
+    result: StyleEditResult;
+  };
+  "styleRules:themeTokens": {
+    args: [sitePath: string];
+    result: ThemeStyleToken[];
+  };
+  "components:list": {
+    args: [sitePath: string];
+    result: ComponentListing;
+  };
+  "components:customize": {
+    args: [sitePath: string, filePath: string];
+    result: CustomizeComponentResult;
+  };
+  "components:read": {
+    args: [sitePath: string, filePath: string];
+    result: ReadContentFileResult;
+  };
+  "components:write": {
+    args: [sitePath: string, filePath: string, text: string];
+    result: SaveComponentResult;
+  };
+  "components:reset": {
+    args: [sitePath: string, filePath: string];
+    result: null;
+  };
+  "components:compare": {
+    args: [sitePath: string, filePath: string];
+    result: ComponentComparison;
+  };
+  "components:keepMine": {
+    args: [sitePath: string, filePath: string];
+    result: null;
+  };
+  "plugins:add": {
+    args: [sitePath: string, nameOrAddress: string];
+    result: AddPluginResult;
+  };
+  "plugins:remove": {
+    args: [sitePath: string, name: string];
+    result: RemovePluginResult;
+  };
+  "plugins:checkAvailable": {
+    args: [name: string];
+    result: boolean;
+  };
+  "plugins:setSetting": {
+    args: [sitePath: string, name: string, setting: string, value: JsonValue];
+    result: PluginSettingResult;
+  };
+  "plugins:unsetSetting": {
+    args: [sitePath: string, name: string, setting: string];
+    result: PluginSettingResult;
+  };
+  "devVars:read": {
+    args: [sitePath: string];
+    result: DevVarsState;
+  };
+  "devVars:write": {
+    args: [sitePath: string, variables: DevVariable[]];
+    result: null;
+  };
+  "devVars:ignore": {
+    args: [sitePath: string];
+    result: DevVarsState;
+  };
   "system:openExternal": {
     args: [url: string];
     result: null;
+  };
+  "clipboard:readText": {
+    args: [];
+    result: string;
   };
   "preview:start": {
     args: [sitePath: string];
@@ -332,6 +775,10 @@ export type IpcInvokeMap = {
 export type IpcEventMap = {
   "recentSites:changed": RecentSite[];
   "content:changed": { sitePath: string };
+  "siteConfig:changed": { sitePath: string };
+  "siteFiles:changed": { sitePath: string };
+  "customCss:changed": { sitePath: string };
+  "components:changed": { sitePath: string };
   "preview:status": { sitePath: string; status: PreviewStatus };
   "sync:changed": { sitePath: string; snapshot: GitSyncSnapshot };
   "auth:statusChanged": AuthStatus;

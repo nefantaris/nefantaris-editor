@@ -50,7 +50,7 @@ const MergeDiffView = ({ yoursText, onlineText }: MergeDiffViewProps) => {
   return (
     <div
       ref={hostRef}
-      className="border-brand-border max-h-72 overflow-y-auto rounded-md border text-sm"
+      className="border-line max-h-72 overflow-y-auto rounded-md border text-sm"
     />
   );
 };
@@ -120,8 +120,8 @@ const ConflictModal = ({
         className={classNames(
           "rounded-md px-3 py-1 text-sm font-medium transition-colors duration-100",
           isPicked
-            ? "bg-brand-primary text-brand-white"
-            : "bg-brand-grayLight text-brand-grayDark hover:bg-brand-border",
+            ? "bg-primary text-on-primary"
+            : "bg-raised text-ink-secondary hover:bg-raised-strong",
         )}
       >
         {label}
@@ -132,20 +132,20 @@ const ConflictModal = ({
   const sidePanel = (side: ConflictFileView["yours"], deletedCopy: string) => {
     if (!side.exists) {
       return (
-        <p className="border-brand-border text-brand-gray rounded-md border p-4 text-sm">
+        <p className="border-line text-ink-muted rounded-md border p-4 text-sm">
           {deletedCopy}
         </p>
       );
     }
     if (side.text === null) {
       return (
-        <p className="border-brand-border text-brand-gray rounded-md border p-4 text-sm">
+        <p className="border-line text-ink-muted rounded-md border p-4 text-sm">
           This file can't be shown here.
         </p>
       );
     }
     return (
-      <pre className="border-brand-border text-brand-black max-h-72 overflow-y-auto rounded-md border p-4 text-sm whitespace-pre-wrap">
+      <pre className="border-line text-ink max-h-72 overflow-y-auto rounded-md border p-4 text-sm whitespace-pre-wrap">
         {side.text}
       </pre>
     );
@@ -153,7 +153,7 @@ const ConflictModal = ({
 
   return (
     <ModalDialog title="Choose what to keep" onClose={onCancel} size="wide">
-      <p className="text-brand-grayDark text-sm">
+      <p className="text-ink-secondary text-sm">
         Some pages changed both here and online. For each one, pick the version
         to keep. Nothing changes until you finish.
       </p>
@@ -173,15 +173,15 @@ const ConflictModal = ({
                   className={classNames(
                     "flex w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors duration-100",
                     isSelected
-                      ? "bg-brand-grayLight text-brand-black font-medium"
-                      : "text-brand-grayDark hover:bg-brand-grayLight",
+                      ? "bg-raised text-ink font-medium"
+                      : "text-ink-secondary hover:bg-raised",
                   )}
                 >
                   <span className="truncate">
                     {displayPath(file.relativePath)}
                   </span>
                   {isResolved && (
-                    <span aria-label="Resolved" className="text-brand-success">
+                    <span aria-label="Resolved" className="text-success">
                       ✓
                     </span>
                   )}
@@ -192,18 +192,18 @@ const ConflictModal = ({
         </ul>
         {selectedFile && (
           <div className="flex min-w-0 grow flex-col gap-3">
-            <p className="text-brand-grayDark text-sm">
+            <p className="text-ink-secondary text-sm">
               {fileDescription(selectedFile)}
             </p>
             <div className="grid grid-cols-2 gap-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-brand-gray text-xs font-semibold tracking-wide uppercase">
+                <span className="text-ink-muted text-xs font-medium">
                   Your version
                 </span>
                 {choiceButton(selectedFile, "yours", "Keep yours")}
               </div>
               <div className="flex items-center justify-between gap-2">
-                <span className="text-brand-gray text-xs font-semibold tracking-wide uppercase">
+                <span className="text-ink-muted text-xs font-medium">
                   Online version
                 </span>
                 {choiceButton(selectedFile, "online", "Keep online version")}
@@ -229,7 +229,7 @@ const ConflictModal = ({
         )}
       </div>
       {error && (
-        <p role="alert" className="text-brand-danger text-sm">
+        <p role="alert" className="text-danger text-sm">
           {error}
         </p>
       )}
@@ -237,13 +237,13 @@ const ConflictModal = ({
         <button
           onClick={() => void handleFinish()}
           disabled={!isAllResolved || isFinishing}
-          className="bg-brand-primary text-brand-white hover:bg-brand-primaryHover disabled:bg-brand-disabled grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:order-2 sm:w-0"
+          className="bg-primary text-on-primary hover:bg-primary-hover disabled:bg-raised disabled:text-ink-disabled grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:order-2 sm:w-0"
         >
           {isFinishing ? "Finishing…" : finishLabel}
         </button>
         <button
           onClick={onCancel}
-          className="bg-brand-grayLight text-brand-grayDark hover:bg-brand-border grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:w-0"
+          className="bg-raised text-ink-secondary hover:bg-raised-strong grow justify-center rounded-md py-3 font-medium transition-colors duration-100 sm:w-0"
         >
           Cancel
         </button>

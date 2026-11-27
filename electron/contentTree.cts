@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   frontmatterDate,
   frontmatterDraft,
+  frontmatterSlug,
   frontmatterTitle,
   parseFrontmatter,
 } from "./frontmatter.cjs";
@@ -19,6 +20,33 @@ export const POSTS_ROOT = "content/posts";
 
 function fileStem(fileName: string): string {
   return fileName.replace(/\.md$/, "");
+}
+
+function pageRoute(
+  relativePath: string,
+  frontmatter: ReturnType<typeof parseFrontmatter>,
+): string | null {
+  if (frontmatterDraft(frontmatter)) {
+    return null;
+  }
+  const slug = frontmatterSlug(frontmatter);
+  if (slug !== null) {
+    return `/${slug}`;
+  }
+  const segments = fileStem(relativePath.slice(PAGES_ROOT.length + 1)).split(
+    "/",
+  );
+  return `/${(segments.at(-1) === "index" ? segments.slice(0, -1) : segments).join("/")}`;
+}
+
+function postRoute(
+  fileName: string,
+  frontmatter: ReturnType<typeof parseFrontmatter>,
+): string | null {
+  if (frontmatterDraft(frontmatter)) {
+    return null;
+  }
+  return `/blog/${frontmatterSlug(frontmatter) ?? fileStem(fileName)}`;
 }
 
 function readDirectoryEntries(absoluteDir: string): fs.Dirent[] {
@@ -73,6 +101,7 @@ function readPagesDirectory(
         title: frontmatterTitle(frontmatter, fileStem(entry.name)),
         fileName: entry.name,
         relativePath,
+        route: pageRoute(relativePath, frontmatter),
       };
     })
     .toSorted((a, b) => a.title.localeCompare(b.title));
@@ -93,6 +122,7 @@ function readPostsDirectory(sitePath: string): PostListEntry[] {
         title: frontmatterTitle(frontmatter, fileStem(entry.name)),
         fileName: entry.name,
         relativePath,
+        route: postRoute(entry.name, frontmatter),
         date: frontmatterDate(frontmatter),
         isDraft: frontmatterDraft(frontmatter),
       };

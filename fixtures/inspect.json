@@ -3,5 +3,16 @@
   "site": null,
   "templates": ["page", "notFound", "home", "post", "blogIndex"],
   "directives": ["gallery"],
-  "plugins": ["nefantaris-plugin-date-fns"]
+  "directiveSchemas": {
+    "gallery": {
+      "label": "gallery",
+      "description": null,
+      "body": "markdown",
+      "placeholder": null,
+      "attributes": {}
+    }
+  },
+  "plugins": ["nefantaris-plugin-date-fns"],
+  "settings": {},
+  "settingValues": {}
 }

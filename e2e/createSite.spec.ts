@@ -194,6 +194,23 @@ test("an existing folder with the derived name blocks creation inline", async ()
   ).toBeDisabled();
 });
 
+test("accented letters in a site name become plain letters in its folder name", async () => {
+  const fakeCoreDir = await createFakeCore();
+  const userDataDir = await createTempDir("nefantaris-userdata-");
+  const parentDir = await createTempDir("nefantaris-create-parent-");
+  const app = await launchEditor(userDataDir, {
+    ...unconfiguredGithubEnv,
+    NEFANTARIS_CORE_DIR: fakeCoreDir,
+  });
+  const welcome = await app.firstWindow();
+
+  const dialog = await fillNameStep(app, welcome, "Résumé Café", parentDir);
+
+  await expect(dialog).toContainText(
+    `Your site will be saved at ${path.join(parentDir, "resume-cafe")}`,
+  );
+});
+
 test("a failing init shows a friendly error and cleans up the folder", async () => {
   const fakeCoreDir = await createFakeCore();
   const released = await releasedFirstPartyRepos();
@@ -267,7 +284,7 @@ test("putting a site online publishes the first version and walks through Cloudf
   ).toBe("First version");
 
   await expect(
-    dialog.locator("code", { hasText: "npx nef build" }),
+    dialog.locator("code", { hasText: "npm run build" }),
   ).toBeVisible();
   await expect(dialog.locator("code", { hasText: /^dist$/ })).toBeVisible();
   const addressField = dialog.getByLabel(/Your site.s address/);

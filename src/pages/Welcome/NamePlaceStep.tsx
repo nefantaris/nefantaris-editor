@@ -107,20 +107,20 @@ const NamePlaceStep = ({
 
   return (
     <>
-      <p className="text-brand-grayDark text-sm">
+      <p className="text-ink-secondary text-sm">
         Pick a name, a place on this computer, and a theme. You can put it
         online in the next step. Creating a site downloads its theme, so
         you&rsquo;ll need to be online.
       </p>
       {error && (
-        <p role="alert" className="text-brand-danger text-sm">
+        <p role="alert" className="text-danger text-sm">
           {error}
         </p>
       )}
       <div className="flex flex-col gap-1">
         <label
           htmlFor={nameFieldId}
-          className="text-brand-grayDark text-xs font-medium"
+          className="text-ink-secondary text-xs font-medium"
         >
           Site name
         </label>
@@ -138,19 +138,19 @@ const NamePlaceStep = ({
         <button
           onClick={() => void chooseParentFolder()}
           disabled={isCreating}
-          className="bg-brand-grayLight text-brand-grayDark hover:bg-brand-border self-start rounded-md px-4 py-2 text-sm font-medium transition-colors duration-100"
+          className="bg-raised text-ink-secondary hover:bg-raised-strong self-start rounded-md px-4 py-2 text-sm font-medium transition-colors duration-100"
         >
           {parentFolder === null
             ? "Choose where to keep it"
             : "Choose a different place"}
         </button>
         {plan !== null && plan.targetPath !== null && !plan.isTaken && (
-          <p className="text-brand-gray text-sm break-all">
+          <p className="text-ink-muted text-sm break-all">
             Your site will be saved at {plan.targetPath}
           </p>
         )}
         {plan !== null && plan.isTaken && (
-          <p role="alert" className="text-brand-danger text-sm break-all">
+          <p role="alert" className="text-danger text-sm break-all">
             There&rsquo;s already a folder named &ldquo;{plan.folderName}&rdquo;
             there. Pick a different name or place.
           </p>
@@ -164,7 +164,7 @@ const NamePlaceStep = ({
         onCustomUrlChanged={setCustomThemeUrl}
       />
       {isCreating && (
-        <p aria-live="polite" className="text-brand-gray text-sm">
+        <p aria-live="polite" className="text-ink-muted text-sm">
           Creating your site and downloading its theme…
         </p>
       )}

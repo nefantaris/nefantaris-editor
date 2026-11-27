@@ -1,10 +1,10 @@
 import type { BrowserWindowConstructorOptions } from "electron";
-import { BrowserWindow } from "electron";
+import { BrowserWindow, dialog, nativeTheme } from "electron";
 import path from "node:path";
-import { unwatchSiteContent, watchSiteContent } from "./contentWatcher.cjs";
 import { stopPreviewServer } from "./devServer.cjs";
 import { checkSiteSync, forgetSiteSync } from "./git/siteSync.cjs";
 import type { WindowContext } from "./ipcContract.cjs";
+import { unwatchSiteFiles, watchSiteFiles } from "./siteWatcher.cjs";
 
 const contextsByWebContentsId = new Map<number, WindowContext>();
 const siteWindowsByPath = new Map<string, BrowserWindow>();
@@ -25,6 +25,7 @@ function createAppWindow(
 ): BrowserWindow {
   const window = new BrowserWindow({
     ...options,
+    backgroundColor: nativeTheme.shouldUseDarkColors ? "#141413" : "#f6f5f3",
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
@@ -38,6 +39,18 @@ function createAppWindow(
   });
   loadRenderer(window);
   return window;
+}
+
+export function renameSiteWindow(sitePath: string, siteName: string): void {
+  const window = siteWindowsByPath.get(sitePath);
+  if (!window) {
+    return;
+  }
+  contextsByWebContentsId.set(window.webContents.id, {
+    kind: "site",
+    sitePath,
+    siteName,
+  });
 }
 
 export function hasOpenSite(sitePath: string): boolean {
@@ -58,7 +71,13 @@ export function createWelcomeWindow(): void {
     return;
   }
   const window = createAppWindow(
-    { width: 760, height: 560, resizable: false, title: "Nefantaris" },
+    {
+      width: 760,
+      height: 560,
+      minWidth: 760,
+      minHeight: 560,
+      title: "Nefantaris",
+    },
     { kind: "welcome" },
   );
   welcomeWindow = window;
@@ -69,6 +88,19 @@ export function createWelcomeWindow(): void {
 
 function closeWelcomeWindow(): void {
   welcomeWindow?.close();
+}
+
+function confirmCloseWithUnsavedCss(window: BrowserWindow): boolean {
+  const choice = dialog.showMessageBoxSync(window, {
+    type: "warning",
+    buttons: ["Keep editing", "Close anyway"],
+    defaultId: 0,
+    cancelId: 0,
+    message: "Your CSS isn't saved yet",
+    detail:
+      "A rule in your custom CSS isn't finished, so it hasn't been saved. If you close now, the unfinished changes are lost.",
+  });
+  return choice === 1;
 }
 
 export function openSiteWindow(sitePath: string, siteName: string): void {
@@ -92,11 +124,16 @@ export function openSiteWindow(sitePath: string, siteName: string): void {
     { kind: "site", sitePath, siteName },
   );
   siteWindowsByPath.set(sitePath, window);
-  watchSiteContent(sitePath);
+  window.webContents.on("will-prevent-unload", (event) => {
+    if (confirmCloseWithUnsavedCss(window)) {
+      event.preventDefault();
+    }
+  });
+  watchSiteFiles(sitePath);
   void checkSiteSync(sitePath);
   window.on("closed", () => {
     siteWindowsByPath.delete(sitePath);
-    unwatchSiteContent(sitePath);
+    unwatchSiteFiles(sitePath);
     forgetSiteSync(sitePath);
     void stopPreviewServer(sitePath);
   });

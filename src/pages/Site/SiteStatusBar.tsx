@@ -1,11 +1,19 @@
 import type { GitSyncSnapshot } from "../../../electron/ipcContract.cts";
 import { PanelRightIcon } from "../../components/Icons.tsx";
+import StatusDot, { type StatusTone } from "../../components/StatusDot.tsx";
 import { classNames } from "../../utils/classNames.ts";
+
+export type SaveState = "saving" | "saved" | "notSaved";
+
+const saveStateLabels: Record<SaveState, string> = {
+  saving: "Saving…",
+  saved: "Saved",
+  notSaved: "Not saved yet",
+};
 
 type SiteStatusBarProps = {
   siteName: string;
-  isFileOpen: boolean;
-  isDirty: boolean;
+  saveState: SaveState | null;
   syncSnapshot: GitSyncSnapshot | null;
   isPreviewOpen: boolean;
   isSignInOffered: boolean;
@@ -34,10 +42,25 @@ function syncLabelFor(snapshot: GitSyncSnapshot): string {
   return "Up to date";
 }
 
+function syncToneFor(snapshot: GitSyncSnapshot): StatusTone {
+  if (snapshot.activity !== "idle") {
+    return "progress";
+  }
+  if (
+    snapshot.connection === "not-connected" ||
+    snapshot.connection === "offline"
+  ) {
+    return "quiet";
+  }
+  if (snapshot.isRemoteAhead) {
+    return "attention";
+  }
+  return "positive";
+}
+
 const SiteStatusBar = ({
   siteName,
-  isFileOpen,
-  isDirty,
+  saveState,
   syncSnapshot,
   isPreviewOpen,
   isSignInOffered,
@@ -62,31 +85,37 @@ const SiteStatusBar = ({
   return (
     <footer
       aria-label="Status bar"
-      className="border-brand-border bg-brand-background text-brand-grayDark flex items-center justify-between border-t px-4 py-2 text-sm"
+      className="border-line bg-sunken text-ink-secondary flex h-10 shrink-0 items-center justify-between gap-3 border-t px-4 text-sm"
     >
-      <span data-testid="site-name">{siteName}</span>
-      <div className="flex items-center gap-3">
-        {isFileOpen && (
-          <span className="text-brand-gray">
-            {isDirty ? "Saving…" : "Saved"}
+      <span data-testid="site-name" className="text-ink truncate font-medium">
+        {siteName}
+      </span>
+      <div className="flex shrink-0 items-center gap-2">
+        {saveState !== null && (
+          <span className="text-ink-muted px-2">
+            {saveStateLabels[saveState]}
           </span>
         )}
         {syncSnapshot && (
-          <span className="text-brand-gray" data-testid="sync-status">
+          <span
+            className="text-ink-muted flex items-center gap-2 px-2"
+            data-testid="sync-status"
+          >
+            <StatusDot tone={syncToneFor(syncSnapshot)} />
             {syncLabelFor(syncSnapshot)}
           </span>
         )}
         {isSignInOffered && (
           <button
             onClick={onSignInRequested}
-            className="bg-brand-primary text-brand-white hover:bg-brand-primaryHover rounded-md px-3 py-1 font-medium transition-colors duration-100"
+            className="bg-primary text-on-primary hover:bg-primary-hover rounded-md px-3 py-1 font-medium transition-colors duration-100"
           >
             Sign in
           </button>
         )}
         <button
           onClick={onVersionsRequested}
-          className="text-brand-gray hover:text-brand-black hover:bg-brand-grayLight rounded-md px-2 py-1 transition-colors duration-100"
+          className="text-ink-secondary hover:text-ink hover:bg-raised rounded-md px-2 py-1 transition-colors duration-100"
         >
           Versions
         </button>
@@ -98,8 +127,8 @@ const SiteStatusBar = ({
             className={classNames(
               "rounded-md px-3 py-1 font-medium transition-colors duration-100",
               canPublish
-                ? "bg-brand-primary text-brand-white hover:bg-brand-primaryHover"
-                : "bg-brand-grayLight text-brand-disabled",
+                ? "bg-primary text-on-primary hover:bg-primary-hover"
+                : "bg-raised text-ink-disabled",
             )}
           >
             Publish
@@ -111,10 +140,10 @@ const SiteStatusBar = ({
           onClick={onTogglePreview}
           title="Preview (⌘E)"
           className={classNames(
-            "rounded-md p-1 transition-colors duration-100",
+            "rounded-md p-1.5 transition-colors duration-100",
             isPreviewOpen
-              ? "text-brand-primary hover:text-brand-primaryHover"
-              : "text-brand-gray hover:text-brand-black hover:bg-brand-grayLight",
+              ? "bg-raised text-primary-ink"
+              : "text-ink-muted hover:text-ink hover:bg-raised",
           )}
         >
           <PanelRightIcon />

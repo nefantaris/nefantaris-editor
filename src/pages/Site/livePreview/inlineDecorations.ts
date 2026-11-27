@@ -3,6 +3,8 @@ import type { EditorState, Range, Text } from "@codemirror/state";
 import type { DecorationSet, ViewUpdate } from "@codemirror/view";
 import { Decoration, EditorView, ViewPlugin } from "@codemirror/view";
 import type { SyntaxNode } from "@lezer/common";
+import { hasBlockOptions } from "../blockOptionsModel.ts";
+import { blockOptionsHandlerFacet, blockSchemasFacet } from "./blockFacets.ts";
 import {
   directiveRegionsField,
   frontmatterField,
@@ -15,7 +17,6 @@ import {
   DirectiveFenceWidget,
   HorizontalRuleWidget,
   TaskCheckboxWidget,
-  type DirectiveFenceEdge,
 } from "./widgets.ts";
 
 const hideDeco = Decoration.replace({});
@@ -405,6 +406,8 @@ class InlineDecorationBuilder {
   }
 
   private decorateDirectives(visibleRange: VisibleRange): void {
+    const schemas = this.state.facet(blockSchemasFacet);
+    const optionsHandler = this.state.facet(blockOptionsHandlerFacet);
     for (const region of this.state.field(directiveRegionsField)) {
       if (region.to < visibleRange.from || region.from > visibleRange.to) {
         continue;
@@ -416,19 +419,33 @@ class InlineDecorationBuilder {
         directiveLineDeco,
         "directive",
       );
-      const openEdge: DirectiveFenceEdge =
-        region.kind === "container" ? "open" : "leaf";
-      this.decorateDirectiveFence(region.open, region.name, openEdge);
+      const schema = schemas?.[region.name];
+      this.decorateDirectiveFence(
+        region.open,
+        new DirectiveFenceWidget({
+          name: region.name,
+          label: schema?.label ?? region.name,
+          edge: region.kind === "container" ? "open" : "leaf",
+          onOptionsRequested: hasBlockOptions(schema) ? optionsHandler : null,
+        }),
+      );
       if (region.close) {
-        this.decorateDirectiveFence(region.close, region.name, "close");
+        this.decorateDirectiveFence(
+          region.close,
+          new DirectiveFenceWidget({
+            name: region.name,
+            label: "",
+            edge: "close",
+            onOptionsRequested: null,
+          }),
+        );
       }
     }
   }
 
   private decorateDirectiveFence(
     fence: DirectiveFence,
-    name: string,
-    edge: DirectiveFenceEdge,
+    widget: DirectiveFenceWidget,
   ): void {
     if (this.touches(fence.lineFrom, fence.lineTo)) {
       if (fence.lineFrom < fence.lineTo) {
@@ -439,9 +456,7 @@ class InlineDecorationBuilder {
       return;
     }
     this.ranges.push(
-      Decoration.replace({
-        widget: new DirectiveFenceWidget(name, edge),
-      }).range(fence.lineFrom, fence.lineTo),
+      Decoration.replace({ widget }).range(fence.lineFrom, fence.lineTo),
     );
   }
 }
@@ -460,11 +475,15 @@ class LivePreviewPlugin {
   update(update: ViewUpdate): void {
     const treeChanged =
       syntaxTree(update.state) !== syntaxTree(update.startState);
+    const schemasChanged =
+      update.state.facet(blockSchemasFacet) !==
+      update.startState.facet(blockSchemasFacet);
     if (
       update.docChanged ||
       update.viewportChanged ||
       update.selectionSet ||
-      treeChanged
+      treeChanged ||
+      schemasChanged
     ) {
       this.decorations = buildInlineDecorations(update.view);
     }

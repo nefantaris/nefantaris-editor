@@ -14,34 +14,89 @@
   --font-mono:
     ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
-  --color-brand-primary: #2563eb;
-  --color-brand-primaryHover: #1d4ed8;
-  --color-brand-primaryActive: #1e40af;
+  --color-sunken: #f6f5f3;
+  --color-surface: #ffffff;
+  --color-raised: #efeeeb;
+  --color-raised-strong: #e4e3df;
+  --color-field: #f0efec;
+  --color-line: #e2e1dd;
 
-  --color-brand-secondary: #7c3aed;
-  --color-brand-secondaryHover: #6d28d9;
-  --color-brand-secondaryActive: #5b21b6;
+  --color-ink: #1d1c1a;
+  --color-ink-secondary: #4f4d49;
+  --color-ink-muted: #6b6964;
+  --color-ink-disabled: #a19f9a;
 
-  --color-brand-success: #15803d;
-  --color-brand-warning: #f59e0b;
-  --color-brand-danger: #dc2626;
+  --color-primary: #075bd8;
+  --color-primary-hover: #064fbd;
+  --color-primary-active: #0544a3;
+  --color-on-primary: #ffffff;
+  --color-primary-ink: #075bd8;
 
-  --color-brand-black: #0f172a;
-  --color-brand-white: #ffffff;
+  --color-danger: #b42318;
+  --color-on-danger: #ffffff;
+  --color-success: #1a7f4b;
+  --color-on-success: #ffffff;
+  --color-warning: #a15c07;
 
-  --color-brand-gray: #64748b;
-  --color-brand-grayLight: #e2e8f0;
-  --color-brand-grayDark: #334155;
+  --color-tooltip: #1d1c1a;
+  --color-on-tooltip: #f6f5f3;
+  --color-backdrop: rgb(29 28 26 / 0.45);
 
-  --color-brand-background: #f8fafc;
-  --color-brand-border: #cbd5e1;
-
-  --color-brand-disabled: #94a3b8;
+  --color-code-keyword: #075bd8;
+  --color-code-string: #1a7f4b;
+  --color-code-number: #a14d00;
+  --color-code-type: #0f6e74;
 }
 
 @layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-sunken: #141413;
+      --color-surface: #1b1b1a;
+      --color-raised: #282826;
+      --color-raised-strong: #33322f;
+      --color-field: #262624;
+      --color-line: #2f2e2c;
+
+      --color-ink: #ecebe8;
+      --color-ink-secondary: #b3b1ac;
+      --color-ink-muted: #94928d;
+      --color-ink-disabled: #5d5b57;
+
+      --color-primary: #2a6fdb;
+      --color-primary-hover: #1f63d6;
+      --color-primary-active: #075bd8;
+      --color-on-primary: #ffffff;
+      --color-primary-ink: #7fb0ff;
+
+      --color-danger: #f2776b;
+      --color-on-danger: #1b1b1a;
+      --color-success: #5cc08a;
+      --color-on-success: #1b1b1a;
+      --color-warning: #e0a64f;
+
+      --color-tooltip: #3a3936;
+      --color-on-tooltip: #ecebe8;
+      --color-backdrop: rgb(0 0 0 / 0.6);
+
+      --color-code-keyword: #7fb0ff;
+      --color-code-string: #7cc79a;
+      --color-code-number: #e0a064;
+      --color-code-type: #6cc5c9;
+    }
+  }
+
+  body {
+    background-color: var(--color-sunken);
+    color: var(--color-ink);
+  }
+
   :focus-visible {
-    outline: 2px solid var(--color-brand-primary);
+    outline: 2px solid var(--color-primary-ink);
     outline-offset: 2px;
   }
 }

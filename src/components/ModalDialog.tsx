@@ -1,4 +1,4 @@
-import { useEffect, useRef, type PropsWithChildren } from "react";
+import { useEffect, useId, useRef, type PropsWithChildren } from "react";
 import { classNames } from "../utils/classNames.ts";
 
 type ModalDialogProps = PropsWithChildren<{
@@ -16,6 +16,7 @@ const ModalDialog = ({
   children,
 }: ModalDialogProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -38,16 +39,13 @@ const ModalDialog = ({
           event.preventDefault();
         }
       }}
-      aria-labelledby="modal-title"
+      aria-labelledby={titleId}
       className={classNames(
-        "bg-brand-white backdrop:bg-brand-black/50 m-auto flex max-h-[calc(100vh-3rem)] w-full flex-col rounded-md p-6",
+        "bg-surface text-ink backdrop:bg-backdrop m-auto flex max-h-[calc(100vh-3rem)] w-full flex-col rounded-md p-6",
         size === "md" ? "max-w-md" : "max-w-5xl",
       )}
     >
-      <h2
-        id="modal-title"
-        className="text-brand-black shrink-0 text-lg font-semibold"
-      >
+      <h2 id={titleId} className="text-ink shrink-0 text-lg font-medium">
         {title}
       </h2>
       <div className="mt-4 flex min-h-0 flex-col gap-4 overflow-y-auto">

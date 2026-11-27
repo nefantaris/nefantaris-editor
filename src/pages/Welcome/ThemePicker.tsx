@@ -19,8 +19,8 @@ const themeOptions: ThemeOption[] = [
   },
   {
     key: "nefantaris-theme-resume",
-    label: "Résumé",
-    hint: "A one-page résumé.",
+    label: "Resume",
+    hint: "A one-page resume.",
   },
   {
     key: "nefantaris-theme-docs",
@@ -54,17 +54,17 @@ const ThemePicker = ({
 
   return (
     <fieldset disabled={isDisabled} className="flex flex-col gap-2">
-      <legend className="text-brand-grayDark mb-1 text-xs font-medium">
+      <legend className="text-ink-secondary mb-1 text-xs font-medium">
         Theme
       </legend>
       {themeOptions.map((option) => (
         <label
           key={option.key}
           className={classNames(
-            "flex cursor-pointer items-start gap-3 rounded-md p-3 transition-colors duration-100",
+            "flex cursor-pointer items-start gap-3 rounded-md border p-3 transition-colors duration-100",
             option.key === selectedKey
-              ? "bg-brand-grayLight"
-              : "bg-brand-background hover:bg-brand-grayLight",
+              ? "bg-raised border-primary"
+              : "bg-sunken hover:bg-raised border-transparent",
           )}
         >
           <input
@@ -75,18 +75,18 @@ const ThemePicker = ({
             onChange={() => onKeySelected(option.key)}
             aria-labelledby={`${groupId}-${option.key}-label`}
             aria-describedby={`${groupId}-${option.key}-hint`}
-            className="accent-brand-primary mt-1 h-4 w-4 shrink-0"
+            className="accent-primary mt-1 h-4 w-4 shrink-0"
           />
           <span className="flex flex-col">
             <span
               id={`${groupId}-${option.key}-label`}
-              className="text-brand-black font-medium"
+              className="text-ink font-medium"
             >
               {option.label}
             </span>
             <span
               id={`${groupId}-${option.key}-hint`}
-              className="text-brand-gray text-sm"
+              className="text-ink-muted text-sm"
             >
               {option.hint}
             </span>
@@ -97,7 +97,7 @@ const ThemePicker = ({
         <div className="flex flex-col gap-1">
           <label
             htmlFor={customUrlFieldId}
-            className="text-brand-grayDark text-xs font-medium"
+            className="text-ink-secondary text-xs font-medium"
           >
             Theme address
           </label>

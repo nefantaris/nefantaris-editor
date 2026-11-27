@@ -116,7 +116,7 @@ const PutOnlineStep = ({
     <>
       {authStatus?.state === "unconfigured" && (
         <>
-          <p className="text-brand-grayDark text-sm">
+          <p className="text-ink-secondary text-sm">
             Online publishing isn&rsquo;t set up in this build yet, so your site
             will stay on this computer for now.
           </p>
@@ -132,7 +132,7 @@ const PutOnlineStep = ({
       )}
       {authStatus?.state === "signed-out" && (
         <>
-          <p className="text-brand-grayDark text-sm">
+          <p className="text-ink-secondary text-sm">
             Sign in to GitHub to keep an online copy of your site. That&rsquo;s
             what lets you publish it to the web.
           </p>
@@ -154,19 +154,19 @@ const PutOnlineStep = ({
       )}
       {authStatus?.state === "signed-in" && (
         <>
-          <p className="text-brand-grayDark text-sm">
+          <p className="text-ink-secondary text-sm">
             We&rsquo;ll keep an online copy of your site in your GitHub account
             and put your first version there.
           </p>
           {error && (
-            <p role="alert" className="text-brand-danger text-sm">
+            <p role="alert" className="text-danger text-sm">
               {error}
             </p>
           )}
           <div className="flex flex-col gap-1">
             <label
               htmlFor={repoNameFieldId}
-              className="text-brand-grayDark text-xs font-medium"
+              className="text-ink-secondary text-xs font-medium"
             >
               Name for the online copy
             </label>
@@ -176,14 +176,14 @@ const PutOnlineStep = ({
               value={repoName}
               disabled={isWorking || wiredRepoName !== null}
               onChange={(event) => setRepoName(event.target.value)}
-              className="bg-brand-background text-brand-black focus:ring-brand-primary rounded-md p-3 focus:ring-2 focus:outline-none"
+              className="bg-field text-ink focus:ring-primary rounded-md p-3 focus:ring-2 focus:outline-none"
             />
-            <p className="text-brand-gray text-xs">
+            <p className="text-ink-muted text-xs">
               Letters, numbers, dashes, dots, and underscores work here.
             </p>
           </div>
           {isWorking && (
-            <p aria-live="polite" className="text-brand-gray text-sm">
+            <p aria-live="polite" className="text-ink-muted text-sm">
               {workingLabel}
             </p>
           )}

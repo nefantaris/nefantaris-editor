@@ -85,27 +85,62 @@ export class CodeFenceInfoWidget extends WidgetType {
 
 export type DirectiveFenceEdge = "open" | "close" | "leaf";
 
+export type DirectiveFenceSpec = {
+  name: string;
+  label: string;
+  edge: DirectiveFenceEdge;
+  onOptionsRequested: ((lineFrom: number) => void) | null;
+};
+
+function buildOptionsButton(
+  label: string,
+  onPressed: () => void,
+): HTMLButtonElement {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "nef-directive-options";
+  button.textContent = "Options";
+  button.setAttribute("aria-label", `${label} options`);
+  button.addEventListener("mousedown", (event) => {
+    event.stopPropagation();
+  });
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onPressed();
+  });
+  return button;
+}
+
 export class DirectiveFenceWidget extends WidgetType {
-  constructor(
-    private readonly name: string,
-    private readonly edge: DirectiveFenceEdge,
-  ) {
+  constructor(private readonly spec: DirectiveFenceSpec) {
     super();
   }
 
   eq(other: DirectiveFenceWidget): boolean {
-    return other.name === this.name && other.edge === this.edge;
+    return (
+      other.spec.name === this.spec.name &&
+      other.spec.label === this.spec.label &&
+      other.spec.edge === this.spec.edge &&
+      other.spec.onOptionsRequested === this.spec.onOptionsRequested
+    );
   }
 
   toDOM(view: EditorView): HTMLElement {
+    const { name, label, edge, onOptionsRequested } = this.spec;
     const bar = document.createElement("span");
-    bar.className = `nef-directive-fence nef-directive-fence-${this.edge}`;
-    bar.dataset.directive = this.name;
-    if (this.edge !== "close") {
-      const label = document.createElement("span");
-      label.className = "nef-directive-name";
-      label.textContent = this.name;
-      bar.append(label);
+    bar.className = `nef-directive-fence nef-directive-fence-${edge}`;
+    bar.dataset.directive = name;
+    if (edge !== "close") {
+      const labelElement = document.createElement("span");
+      labelElement.className = "nef-directive-name";
+      labelElement.textContent = label;
+      bar.append(labelElement);
+    }
+    if (onOptionsRequested !== null) {
+      bar.append(
+        buildOptionsButton(label, () => onOptionsRequested(view.posAtDOM(bar))),
+      );
     }
     bar.addEventListener("mousedown", (event) => {
       event.preventDefault();

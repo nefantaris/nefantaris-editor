@@ -10,7 +10,7 @@ type GoLiveStepProps = {
   onOpenSiteRequested: () => void;
 };
 
-const BUILD_COMMAND = "npx nef build";
+const BUILD_COMMAND = "npm run build";
 const OUTPUT_DIRECTORY = "dist";
 const CLOUDFLARE_DASHBOARD_URL = "https://dash.cloudflare.com/";
 const POLL_INTERVAL_MS = 5000;
@@ -26,16 +26,16 @@ const CopyField = ({ label, value }: { label: string; value: string }) => {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-brand-grayDark w-28 shrink-0 text-xs font-medium">
+      <span className="text-ink-secondary w-28 shrink-0 text-xs font-medium">
         {label}
       </span>
-      <code className="bg-brand-background text-brand-black grow rounded-md px-2 py-1 text-sm">
+      <code className="bg-sunken text-ink grow rounded-md px-2 py-1 text-sm">
         {value}
       </code>
       <button
         onClick={() => void copyValue()}
         aria-label={`Copy the ${label.toLowerCase()}`}
-        className="text-brand-grayDark hover:bg-brand-grayLight shrink-0 rounded-md px-2 py-1 text-sm font-medium transition-colors duration-100"
+        className="text-ink-secondary hover:bg-raised shrink-0 rounded-md px-2 py-1 text-sm font-medium transition-colors duration-100"
       >
         {isCopied ? "Copied" : "Copy"}
       </button>
@@ -113,11 +113,11 @@ const GoLiveStep = ({
 
   return (
     <>
-      <p className="text-brand-grayDark text-sm">
+      <p className="text-ink-secondary text-sm">
         Cloudflare Pages hosts your site for free. This takes about two minutes
         in your browser:
       </p>
-      <ol className="text-brand-grayDark flex list-decimal flex-col gap-1.5 pl-5 text-sm">
+      <ol className="text-ink-secondary flex list-decimal flex-col gap-1.5 pl-5 text-sm">
         <li>Open dash.cloudflare.com and sign in — a free account works.</li>
         <li>
           Go to Workers &amp; Pages, choose Create application, then the Pages
@@ -136,10 +136,10 @@ const GoLiveStep = ({
         <CopyField label="Build command" value={BUILD_COMMAND} />
         <CopyField label="Output folder" value={OUTPUT_DIRECTORY} />
       </div>
-      <div className="border-brand-border flex flex-col gap-2 border-t pt-4">
+      <div className="border-line flex flex-col gap-2 border-t pt-4">
         <label
           htmlFor={addressFieldId}
-          className="text-brand-grayDark text-xs font-medium"
+          className="text-ink-secondary text-xs font-medium"
         >
           Your site&rsquo;s address
         </label>
@@ -150,12 +150,12 @@ const GoLiveStep = ({
             value={siteUrl}
             disabled={checkState !== "idle"}
             onChange={(event) => setSiteUrl(event.target.value)}
-            className="bg-brand-background text-brand-black focus:ring-brand-primary min-w-0 grow rounded-md p-3 text-sm focus:ring-2 focus:outline-none"
+            className="bg-field text-ink focus:ring-primary min-w-0 grow rounded-md p-3 text-sm focus:ring-2 focus:outline-none"
           />
           {checkState === "checking" ? (
             <button
               onClick={stopChecking}
-              className="bg-brand-grayLight text-brand-grayDark hover:bg-brand-border shrink-0 rounded-md px-4 py-2 font-medium transition-colors duration-100"
+              className="bg-raised text-ink-secondary hover:bg-raised-strong shrink-0 rounded-md px-4 py-2 font-medium transition-colors duration-100"
             >
               Stop
             </button>
@@ -163,20 +163,20 @@ const GoLiveStep = ({
             <button
               onClick={startChecking}
               disabled={checkState === "live"}
-              className="bg-brand-grayLight text-brand-grayDark hover:bg-brand-border disabled:text-brand-disabled shrink-0 rounded-md px-4 py-2 font-medium transition-colors duration-100"
+              className="bg-raised text-ink-secondary hover:bg-raised-strong disabled:text-ink-disabled shrink-0 rounded-md px-4 py-2 font-medium transition-colors duration-100"
             >
               Check
             </button>
           )}
         </div>
         {checkState === "checking" && (
-          <p aria-live="polite" className="text-brand-gray text-sm">
+          <p aria-live="polite" className="text-ink-muted text-sm">
             Checking every few seconds… the first deploy can take a couple of
             minutes.
           </p>
         )}
         {hasGivenUp && (
-          <p aria-live="polite" className="text-brand-gray text-sm">
+          <p aria-live="polite" className="text-ink-muted text-sm">
             It&rsquo;s not answering yet. Give Cloudflare a little longer, then
             check again.
           </p>
@@ -184,7 +184,7 @@ const GoLiveStep = ({
         {checkState === "live" && (
           <p
             role="status"
-            className="bg-brand-background text-brand-success rounded-md p-3 text-sm font-medium"
+            className="bg-sunken text-success rounded-md p-3 text-sm font-medium"
           >
             Your site is live.
           </p>

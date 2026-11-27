@@ -4,7 +4,14 @@ import type {
   RecentSite,
   SiteValidationFailure,
 } from "../../../electron/ipcContract.cts";
+import {
+  CloudDownloadIcon,
+  FolderIcon,
+  PlusIcon,
+  SpiderwebMark,
+} from "../../components/Icons.tsx";
 import SignInModal from "../../components/SignInModal.tsx";
+import { classNames } from "../../utils/classNames.ts";
 import { useAuthStatus } from "../../utils/useAuthStatus.ts";
 import AccountArea from "./AccountArea.tsx";
 import ConnectSiteModal from "./ConnectSiteModal.tsx";
@@ -30,6 +37,9 @@ const describeFailure = (
       return `The nefantaris.json in ${path} is missing a site name.`;
   }
 };
+
+const startActionClasses =
+  "bg-raised text-ink hover:bg-raised-strong flex items-center gap-3 rounded-md px-4 py-3 text-left text-sm font-medium transition-colors duration-100";
 
 const Welcome = () => {
   const authStatus = useAuthStatus();
@@ -85,115 +95,132 @@ const Welcome = () => {
   }, []);
 
   return (
-    <div className="bg-brand-background flex h-screen flex-col gap-6 p-6">
-      <main className="flex min-h-0 grow flex-col gap-6">
-        <header>
-          <h1 className="text-brand-black text-2xl font-bold">Nefantaris</h1>
-          <p className="text-brand-gray">Your site, ready to edit.</p>
-        </header>
-        {failure && (
-          <div
-            role="alert"
-            className="border-brand-danger text-brand-danger bg-brand-white flex items-start justify-between gap-3 rounded-md border p-4"
-          >
-            <p>{failure.message}</p>
-            {removableFailurePath && (
-              <button
-                onClick={() => void removeRecentSite(removableFailurePath)}
-                className="hover:text-brand-black shrink-0 rounded-md underline transition-colors duration-100"
-              >
-                Remove from list
-              </button>
-            )}
-          </div>
-        )}
-        <div className="flex min-h-0 grow gap-6">
-          <section
-            aria-labelledby="start-heading"
-            className="flex w-60 shrink-0 flex-col gap-3"
-          >
-            <h2
-              id="start-heading"
-              className="text-brand-black text-lg font-semibold"
+    <div className="bg-sunken h-screen overflow-y-auto">
+      <div className="mx-auto flex h-full min-h-128 max-w-4xl flex-col gap-6 p-6">
+        <main className="flex min-h-0 grow flex-col gap-6">
+          <header className="flex items-center gap-3">
+            <SpiderwebMark className="size-10 shrink-0" />
+            <div className="flex flex-col">
+              <h1 className="text-ink text-2xl leading-tight font-semibold">
+                Nefantaris
+              </h1>
+              <p className="text-ink-muted text-sm">Your site, ready to edit</p>
+            </div>
+          </header>
+          {failure && (
+            <div
+              role="alert"
+              className="bg-surface text-ink flex items-start justify-between gap-3 rounded-md p-4 text-sm"
             >
-              Start
-            </h2>
-            <button
-              onClick={() => void openFromDialog()}
-              className="bg-brand-primary text-brand-white hover:bg-brand-primaryHover rounded-md p-4 text-left font-medium transition-colors duration-100"
-            >
-              Open site…
-            </button>
-            <button
-              onClick={() => setIsCreateOpen(true)}
-              className="bg-brand-primary text-brand-white hover:bg-brand-primaryHover rounded-md p-4 text-left font-medium transition-colors duration-100"
-            >
-              Create site
-            </button>
-            <button
-              disabled={!isSignedIn}
-              title={
-                authStatus?.state === "signed-out"
-                  ? "Sign in to GitHub first"
-                  : undefined
-              }
-              onClick={() => setIsConnectOpen(true)}
-              className={
-                isSignedIn
-                  ? "bg-brand-primary text-brand-white hover:bg-brand-primaryHover rounded-md p-4 text-left font-medium transition-colors duration-100"
-                  : "bg-brand-grayLight text-brand-gray rounded-md p-4 text-left font-medium"
-              }
-            >
-              Connect existing site
-            </button>
-          </section>
-          <section
-            aria-labelledby="recent-heading"
-            className="flex min-w-0 grow flex-col gap-3"
-          >
-            <h2
-              id="recent-heading"
-              className="text-brand-black text-lg font-semibold"
-            >
-              Recent sites
-            </h2>
-            {recentSites.length === 0 ? (
-              <p className="text-brand-gray">
-                Sites you open will show up here.
+              <p className="flex items-start gap-3">
+                <span
+                  aria-hidden="true"
+                  className="bg-danger mt-1.5 size-2 shrink-0 rounded-full"
+                />
+                <span>{failure.message}</span>
               </p>
-            ) : (
-              <ul className="flex flex-col gap-1 overflow-y-auto">
-                {recentSites.map((site) => (
-                  <li key={site.path}>
-                    <button
-                      onClick={() => void openRecentSite(site)}
-                      className="hover:bg-brand-grayLight w-full rounded-md p-3 text-left transition-colors duration-100"
-                    >
-                      <span className="text-brand-black block font-medium">
-                        {site.name}
-                      </span>
-                      <span className="text-brand-gray block truncate text-sm">
-                        {site.path}
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        </div>
-      </main>
-      <AccountArea
-        status={authStatus}
-        onSignInRequested={() => setIsSignInOpen(true)}
-      />
-      {isSignInOpen && <SignInModal onClose={() => setIsSignInOpen(false)} />}
-      {isConnectOpen && (
-        <ConnectSiteModal onClose={() => setIsConnectOpen(false)} />
-      )}
-      {isCreateOpen && (
-        <CreateSiteWizard onClose={() => setIsCreateOpen(false)} />
-      )}
+              {removableFailurePath && (
+                <button
+                  onClick={() => void removeRecentSite(removableFailurePath)}
+                  className="bg-raised text-ink hover:bg-raised-strong shrink-0 rounded-md px-3 py-1.5 font-medium transition-colors duration-100"
+                >
+                  Remove from list
+                </button>
+              )}
+            </div>
+          )}
+          <div className="flex min-h-0 grow gap-6">
+            <section
+              aria-labelledby="start-heading"
+              className="flex w-56 shrink-0 flex-col gap-3"
+            >
+              <h2
+                id="start-heading"
+                className="text-ink-secondary text-sm font-medium"
+              >
+                Start
+              </h2>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => void openFromDialog()}
+                  className={startActionClasses}
+                >
+                  <FolderIcon className="text-ink-muted shrink-0" />
+                  Open site…
+                </button>
+                <button
+                  onClick={() => setIsCreateOpen(true)}
+                  className="bg-primary text-on-primary hover:bg-primary-hover flex items-center gap-3 rounded-md px-4 py-3 text-left text-sm font-medium transition-colors duration-100"
+                >
+                  <PlusIcon className="shrink-0" />
+                  Create site
+                </button>
+                <button
+                  disabled={!isSignedIn}
+                  title={
+                    authStatus?.state === "signed-out"
+                      ? "Sign in to GitHub first"
+                      : undefined
+                  }
+                  onClick={() => setIsConnectOpen(true)}
+                  className={classNames(
+                    startActionClasses,
+                    "disabled:text-ink-disabled disabled:hover:bg-raised disabled:cursor-default",
+                  )}
+                >
+                  <CloudDownloadIcon className="shrink-0" />
+                  Connect existing site
+                </button>
+              </div>
+            </section>
+            <section
+              aria-labelledby="recent-heading"
+              className="flex min-w-0 grow flex-col gap-3"
+            >
+              <h2
+                id="recent-heading"
+                className="text-ink-secondary text-sm font-medium"
+              >
+                Recent sites
+              </h2>
+              {recentSites.length === 0 ? (
+                <p className="bg-surface text-ink-muted rounded-md p-4 text-sm">
+                  Sites you open will show up here.
+                </p>
+              ) : (
+                <ul className="bg-surface flex min-h-0 flex-col gap-1 overflow-y-auto rounded-md p-2">
+                  {recentSites.map((site) => (
+                    <li key={site.path}>
+                      <button
+                        onClick={() => void openRecentSite(site)}
+                        className="hover:bg-raised w-full rounded-md px-3 py-2 text-left transition-colors duration-100"
+                      >
+                        <span className="text-ink block text-sm font-medium">
+                          {site.name}
+                        </span>
+                        <span className="text-ink-muted block truncate text-xs">
+                          {site.path}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          </div>
+        </main>
+        <AccountArea
+          status={authStatus}
+          onSignInRequested={() => setIsSignInOpen(true)}
+        />
+        {isSignInOpen && <SignInModal onClose={() => setIsSignInOpen(false)} />}
+        {isConnectOpen && (
+          <ConnectSiteModal onClose={() => setIsConnectOpen(false)} />
+        )}
+        {isCreateOpen && (
+          <CreateSiteWizard onClose={() => setIsCreateOpen(false)} />
+        )}
+      </div>
     </div>
   );
 };

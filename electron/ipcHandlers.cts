@@ -1,5 +1,5 @@
 import type { OpenDialogOptions } from "electron";
-import { BrowserWindow, dialog, shell } from "electron";
+import { BrowserWindow, clipboard, dialog, shell } from "electron";
 import path from "node:path";
 import {
   createPage,
@@ -33,22 +33,62 @@ import {
   signOut,
   startSignIn,
 } from "./githubAuth.cjs";
-import type { OpenSiteResult } from "./ipcContract.cjs";
+import type {
+  OpenSiteResult,
+  SiteConfigEdit,
+  SiteConfigSnapshot,
+} from "./ipcContract.cjs";
 import {
   loadRecentSites,
   recordRecentSite,
   removeRecentSite,
+  renameRecentSite,
 } from "./recentSites.cjs";
+import { editSiteConfig, readSiteConfigSnapshot } from "./siteConfig.cjs";
 import {
   connectExistingSite,
   discardClonedFolder,
   pickParentFolder,
 } from "./siteConnect.cjs";
 import { createNewSite, planNewSite } from "./siteCreate.cjs";
+import { ignoreDevVars, readDevVars, writeDevVars } from "./siteDevVars.cjs";
+import { findFavicon, listSiteImages, replaceFavicon } from "./siteFiles.cjs";
 import { inspectSite } from "./siteInspect.cjs";
+import {
+  addSitePlugin,
+  isPluginAvailable,
+  removeSitePlugin,
+  setPluginSetting,
+  unsetPluginSetting,
+} from "./sitePlugins.cjs";
+import {
+  readSiteStylesheet,
+  siteStylesheetFindings,
+  themeStyleTokens,
+  themeTokenValues,
+  writeSiteStylesheet,
+} from "./siteStylesheet.cjs";
 import { validateSiteFolder } from "./siteValidation.cjs";
+import {
+  editStyledRule,
+  readStyledRules,
+  resetStyledTarget,
+} from "./styleRules.cjs";
+import {
+  compareComponent,
+  customizeComponent,
+  keepMyComponent,
+  listComponents,
+  readComponent,
+  resetComponent,
+  writeComponent,
+} from "./themeComponents.cjs";
 import { broadcast, handleInvoke } from "./typedIpc.cjs";
-import { getWindowContext, openSiteWindow } from "./windows.cjs";
+import {
+  getWindowContext,
+  openSiteWindow,
+  renameSiteWindow,
+} from "./windows.cjs";
 
 function openSiteAtPath(rawPath: string): OpenSiteResult {
   const sitePath = path.resolve(rawPath);
@@ -64,6 +104,23 @@ function openSiteAtPath(rawPath: string): OpenSiteResult {
   broadcast("recentSites:changed", recents);
   openSiteWindow(sitePath, validation.siteName);
   return { status: "opened", siteName: validation.siteName };
+}
+
+function editSiteConfigAndFollowName(
+  sitePath: string,
+  edits: SiteConfigEdit[],
+): SiteConfigSnapshot {
+  const snapshot = editSiteConfig(sitePath, edits);
+  const name = snapshot.status === "ok" ? snapshot.config.name : null;
+  if (typeof name !== "string" || name.trim() === "") {
+    return snapshot;
+  }
+  renameSiteWindow(sitePath, name);
+  const recents = renameRecentSite(sitePath, name);
+  if (recents !== null) {
+    broadcast("recentSites:changed", recents);
+  }
+  return snapshot;
 }
 
 export function registerIpcHandlers(): void {
@@ -131,6 +188,118 @@ export function registerIpcHandlers(): void {
   );
 
   handleInvoke("site:inspect", (_event, sitePath) => inspectSite(sitePath));
+
+  handleInvoke("siteConfig:read", (_event, sitePath) =>
+    readSiteConfigSnapshot(sitePath),
+  );
+
+  handleInvoke("siteConfig:edit", (_event, sitePath, edits) =>
+    editSiteConfigAndFollowName(sitePath, edits),
+  );
+
+  handleInvoke("siteFiles:listImages", (_event, sitePath) =>
+    listSiteImages(sitePath),
+  );
+
+  handleInvoke("siteFiles:getFavicon", (_event, sitePath) =>
+    findFavicon(sitePath),
+  );
+
+  handleInvoke("siteFiles:setFavicon", (_event, sitePath, name, mime, bytes) =>
+    replaceFavicon(sitePath, name, mime, bytes),
+  );
+
+  handleInvoke("customCss:read", (_event, sitePath) =>
+    readSiteStylesheet(sitePath),
+  );
+
+  handleInvoke("customCss:write", (_event, sitePath, text) => {
+    writeSiteStylesheet(sitePath, text);
+    return null;
+  });
+
+  handleInvoke("customCss:findings", (_event, sitePath) =>
+    siteStylesheetFindings(sitePath),
+  );
+
+  handleInvoke("customCss:themeTokens", (_event, sitePath) =>
+    themeStyleTokens(sitePath),
+  );
+
+  handleInvoke("styleRules:read", (_event, sitePath, widths) =>
+    readStyledRules(sitePath, widths),
+  );
+
+  handleInvoke("styleRules:edit", (_event, sitePath, widths, edit) =>
+    editStyledRule(sitePath, widths, edit),
+  );
+
+  handleInvoke("styleRules:resetTarget", (_event, sitePath, widths, selector) =>
+    resetStyledTarget(sitePath, widths, selector),
+  );
+
+  handleInvoke("styleRules:themeTokens", (_event, sitePath) =>
+    themeTokenValues(sitePath),
+  );
+
+  handleInvoke("components:list", (_event, sitePath) =>
+    listComponents(sitePath),
+  );
+
+  handleInvoke("components:customize", (_event, sitePath, filePath) =>
+    customizeComponent(sitePath, filePath),
+  );
+
+  handleInvoke("components:read", (_event, sitePath, filePath) =>
+    readComponent(sitePath, filePath),
+  );
+
+  handleInvoke("components:write", (_event, sitePath, filePath, text) =>
+    writeComponent(sitePath, filePath, text),
+  );
+
+  handleInvoke("components:reset", (_event, sitePath, filePath) => {
+    resetComponent(sitePath, filePath);
+    return null;
+  });
+
+  handleInvoke("components:compare", (_event, sitePath, filePath) =>
+    compareComponent(sitePath, filePath),
+  );
+
+  handleInvoke("components:keepMine", async (_event, sitePath, filePath) => {
+    await keepMyComponent(sitePath, filePath);
+    return null;
+  });
+
+  handleInvoke("plugins:add", (_event, sitePath, nameOrAddress) =>
+    addSitePlugin(sitePath, nameOrAddress),
+  );
+
+  handleInvoke("plugins:remove", (_event, sitePath, name) =>
+    removeSitePlugin(sitePath, name),
+  );
+
+  handleInvoke("plugins:checkAvailable", (_event, name) =>
+    isPluginAvailable(name),
+  );
+
+  handleInvoke("plugins:setSetting", (_event, sitePath, name, setting, value) =>
+    setPluginSetting(sitePath, name, setting, value),
+  );
+
+  handleInvoke("plugins:unsetSetting", (_event, sitePath, name, setting) =>
+    unsetPluginSetting(sitePath, name, setting),
+  );
+
+  handleInvoke("devVars:read", (_event, sitePath) => readDevVars(sitePath));
+
+  handleInvoke("devVars:write", (_event, sitePath, variables) => {
+    writeDevVars(sitePath, variables);
+    return null;
+  });
+
+  handleInvoke("devVars:ignore", (_event, sitePath) => ignoreDevVars(sitePath));
 
   handleInvoke("preview:start", (_event, sitePath) =>
     startPreviewServer(sitePath),
@@ -226,6 +395,8 @@ export function registerIpcHandlers(): void {
     }
     return null;
   });
+
+  handleInvoke("clipboard:readText", () => clipboard.readText());
 }
 
 function parseUrlOrNull(url: string): URL | null {

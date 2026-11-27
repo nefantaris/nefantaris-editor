@@ -32,3 +32,10 @@ export function runCoreCommand(args: string[]): Promise<CoreRunOutcome> {
     );
   });
 }
+
+export function coreErrorDetail(stderr: string): string | undefined {
+  return stderr
+    .split("\n")
+    .map((line) => line.trim())
+    .findLast((line) => line !== "");
+}
